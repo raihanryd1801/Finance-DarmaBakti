@@ -19,6 +19,13 @@ Route::get('/finance/uang-masuk/create', [UangMasukController::class, 'create'])
 Route::post('/finance/uang-masuk', [UangMasukController::class, 'store'])->name('uang_masuk.store');
 Route::post('/finance/uang-masuk/import', [UangMasukController::class, 'import'])->name('uang_masuk.import');
 
+//Report
+Route::get('/finance/report', [UangMasukController::class, 'report'])->name('finance.report');
+// Rute untuk Edit, Update, dan Delete
+Route::get('/finance/uang-masuk/{id}/edit', [UangMasukController::class, 'edit'])->name('uang_masuk.edit');
+Route::put('/finance/uang-masuk/{id}', [UangMasukController::class, 'update'])->name('uang_masuk.update');
+Route::delete('/finance/uang-masuk/{id}', [UangMasukController::class, 'destroy'])->name('uang_masuk.destroy');
+
 //Login
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.process');

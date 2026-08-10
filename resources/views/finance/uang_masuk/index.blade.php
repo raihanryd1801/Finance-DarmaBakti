@@ -1,16 +1,80 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        /* ===== FIX PAGINATION - PROFESSIONAL & COMPACT ===== */
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .pagination .page-item {
+            margin: 0;
+        }
+
+        .pagination .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 8px;
+            font-size: 0.85rem;
+            color: #334155;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            text-decoration: none;
+            line-height: 1;
+            transition: all 0.15s ease;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #1e293b;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #cbd5e1;
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Jaga-jaga kalau suatu saat pagination pakai SVG lagi, ukurannya tetap dikunci */
+        .pagination svg {
+            width: 16px !important;
+            height: 16px !important;
+            display: inline-block;
+        }
+    </style>
+
     <!-- Header Atas (Judul & Tombol Tambah/Import) -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;">
-        <h2 style="margin: 0; font-size: 1.5rem; color: #1e293b;">Data Uang Masuk</h2>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <a href="{{ route('uang_masuk.create') }}" class="btn btn-success">Tambah Data</a>
-            
-            <!-- Form Import -->
-            <form action="{{ route('uang_masuk.import') }}" method="POST" enctype="multipart/form-data" style="display: inline-flex; gap: 5px; align-items: center; flex-wrap: wrap;">
+        <h2 style="margin: 0; font-size: 1.5rem; color: #1e293b;">
+            Data Uang Masuk - {{ strtoupper($kategori) }}
+        </h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="{{ route('uang_masuk.create') }}" class="btn btn-success">+ Tambah Data</a>
+
+            <!-- Form Import Excel -->
+            <form action="{{ route('uang_masuk.import') }}" method="POST" enctype="multipart/form-data" style="display: inline-flex; gap: 5px; align-items: center;">
                 @csrf
-                <input type="file" name="file_excel" required style="font-size: 0.85rem; background: white; padding: 4px; border: 1px solid #d1d5db; border-radius: 4px;">
+                <input type="file" name="file_excel" required style="font-size: 0.85rem; background: white; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px;">
                 <button type="submit" class="btn btn-secondary">Import Excel</button>
             </form>
         </div>
@@ -22,165 +86,162 @@
         </div>
     @endif
 
-    <!-- Area Tabel Full Width -->
-    <div class="card" style="width: 100%; box-sizing: border-box; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        
-        <!-- Form Filter -->
-        <div class="filter-section" style="margin-bottom: 1.5rem;">
-            <form action="{{ route('uang_masuk.index') }}" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <select name="instansi" class="form-control" style="padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 4px; background: white; min-width: 150px;">
-                    <option value="">Semua Instansi</option>
-                    @foreach($listInstansi as $instansi)
-                        <option value="{{ $instansi }}" {{ request('instansi') == $instansi ? 'selected' : '' }}>
-                            {{ strtoupper($instansi) }}
-                        </option>
-                    @endforeach
-                </select>
+    <!-- Area Konten Utama -->
+    <div class="card" style="width: 100%; box-sizing: border-box; padding: 1rem;">
 
-                <input type="text" name="search" placeholder="Cari nama pengadaan..." value="{{ request('search') }}" class="form-control" style="flex: 1; min-width: 200px; padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 4px;">
-                
-                <button type="submit" class="btn btn-primary" style="padding: 6px 16px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">Filter</button>
-                <a href="{{ route('uang_masuk.index') }}" class="btn btn-secondary" style="padding: 6px 16px; background: #6b7280; color: white; border: none; border-radius: 4px; text-decoration: none;">Reset</a>
+        <!-- Form Filter dengan Tanggal -->
+        <div class="filter-section" style="margin-bottom: 1.5rem;">
+            <form action="{{ route('uang_masuk.index') }}" method="GET" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
+                <!-- Lempar variabel kategori -->
+                <input type="hidden" name="kategori" value="{{ $kategori }}">
+
+                <div>
+                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Instansi</label>
+                    <select name="instansi" class="form-control">
+                        <option value="">-- Semua Instansi --</option>
+                        @foreach($listInstansi as $instansi)
+                            <option value="{{ $instansi }}" {{ request('instansi') == $instansi ? 'selected' : '' }}>
+                                {{ strtoupper($instansi) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Dari Tanggal</label>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Sampai Tanggal</label>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
+                </div>
+
+                <div style="flex-grow: 1; min-width: 200px;">
+                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Cari Data</label>
+                    <input type="text" name="search" placeholder="Cari nama pengadaan / keterangan..." value="{{ request('search') }}" class="form-control" style="width: 100%;">
+                </div>
+
+                <div style="display: flex; gap: 5px;">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{{ route('uang_masuk.index', ['kategori' => $kategori]) }}" class="btn btn-secondary">Reset</a>
+                </div>
             </form>
         </div>
-
-        <!-- Tabel dengan Scroll Horizontal -->
-        <div style="overflow-x: auto; border-radius: 6px; border: 1px solid #e5e7eb; margin-top: 15px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 1200px;">
+        <!-- Tabel Full Screen -->
+        <div class="table-container" style="width: 100%; overflow-x: auto;">
+            <table class="finance-table" style="width: 100%;">
                 <thead>
-                    <tr style="background-color: #f3f4f6;">
-                        <th style="padding: 0.6rem 0.75rem; text-align: left; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Instansi</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: left; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Nama Pengadaan</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: left; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Nama PPK</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: right; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Jumlah (include PPN)</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: right; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Jumlah (exclude PPN)</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: right; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">PPh 22</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: right; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Total Diterima</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: right; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Total Rekening Koran</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: center; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Status Transfer</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: left; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Tanggal TF Rek</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: left; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Rekening</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: left; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">No Pengembalian</th>
-                        <th style="padding: 0.6rem 0.75rem; text-align: center; border: 1px solid #e5e7eb; font-weight: 600; white-space: nowrap;">Status Faktur</th>
-                    </tr>
+                    @if($kategori == 'swasta')
+                        <!-- HEADER TABEL SWASTA -->
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal Transfer</th>
+                            <th>Jumlah Transfer (Include PPN)</th>
+                            <th>Total (Exclude PPN)</th>
+                            <th>PPN</th>
+                            <th>Nilai Nota</th>
+                            <th>Selisih</th>
+                            <th>INSTANSI</th>
+                            <th>Rekening</th>
+                            <th>Keterangan</th>
+                            <th style="text-align: center;">Aksi</th>
+                        </tr>
+                    @else
+                        <!-- HEADER TABEL PEMERINTAH -->
+                        <tr>
+                            <th>Instansi</th>
+                            <th>Nama Pengadaan</th>
+                            <th>Nama PPK</th>
+                            <th>Jumlah (include PPN)</th>
+                            <th>Jumlah (exclude PPN)</th>
+                            <th>PPh 22</th>
+                            <th>Total yang di terima</th>
+                            <th>Total Rekening Koran</th>
+                            <th>SUDAH TF/BELUM TF</th>
+                            <th>Tanggal TF Rek</th>
+                            <th>Rekening</th>
+                            <th>NO PENGEMBALIAN</th>
+                            <th>SUDAH BUAT FAKTUR</th>
+                            <th style="text-align: center;">Aksi</th>
+                        </tr>
+                    @endif
                 </thead>
                 <tbody>
-                    @forelse($dataUangMasuk as $row)
-                    <tr style="{{ $loop->even ? 'background-color: #f9fafb;' : '' }}">
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; white-space: nowrap;">
-                            <strong>{{ $row->instansi }}</strong>
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; word-wrap: break-word; white-space: normal; max-width: 250px;">
-                            {{ $row->nama_pengadaan ?? '-' }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; white-space: nowrap;">
-                            {{ $row->nama_ppk ?? '-' }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; text-align: right; white-space: nowrap;">
-                            Rp {{ number_format($row->jumlah_include_ppn, 0, ',', '.') }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; text-align: right; white-space: nowrap;">
-                            Rp {{ number_format($row->jumlah_exclude_ppn, 0, ',', '.') }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; text-align: right; white-space: nowrap;">
-                            Rp {{ number_format($row->pph_22, 0, ',', '.') }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; text-align: right; white-space: nowrap; font-weight: bold; color: #047857;">
-                            Rp {{ number_format($row->total_diterima, 0, ',', '.') }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; text-align: right; white-space: nowrap;">
-                            Rp {{ number_format($row->total_rekening_koran, 0, ',', '.') }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; text-align: center; white-space: nowrap;">
-                            <span style="padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; {{ $row->status_transfer == 'SUDAH' ? 'background: #10b981; color: white;' : 'background: #f59e0b; color: white;' }}">
-                                {{ $row->status_transfer ?? 'BELUM' }}
-                            </span>
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; white-space: nowrap;">
-                            {{ $row->tanggal_transfer ? \Carbon\Carbon::parse($row->tanggal_transfer)->translatedFormat('d F Y') : '-' }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; white-space: nowrap;">
-                            {{ $row->rekening_tujuan ?? '-' }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; word-wrap: break-word; white-space: normal; max-width: 200px;">
-                            {{ $row->status_pengembalian ?? '-' }}
-                        </td>
-                        <td style="padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; text-align: center; white-space: nowrap;">
-                            {{ $row->status_faktur ?? '-' }}
-                        </td>
-                    </tr>
+                    @forelse($dataUangMasuk as $index => $row)
+                        @if($kategori == 'swasta')
+                            <!-- ISI TABEL SWASTA -->
+                            <tr>
+                                <td style="text-align: center;">{{ $dataUangMasuk->firstItem() + $index }}</td>
+                                <td>{{ $row->tanggal_transfer ? \Carbon\Carbon::parse($row->tanggal_transfer)->translatedFormat('d F Y') : '-' }}</td>
+                                <td class="angka">Rp {{ number_format((float)$row->jumlah_include_ppn, 0, ',', '.') }}</td>
+                                <td class="angka">Rp {{ number_format((float)$row->jumlah_exclude_ppn, 0, ',', '.') }}</td>
+                                <td class="angka" style="color: #0284c7;">Rp {{ number_format((float)$row->ppn, 0, ',', '.') }}</td>
+                                <td class="angka">Rp {{ number_format((float)$row->nilai_nota, 0, ',', '.') }}</td>
+                                <td class="angka" style="{{ $row->selisih < 0 ? 'color: red;' : '' }}">
+                                    Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
+                                </td>
+                                <td><strong>{{ $row->instansi }}</strong></td>
+                                <td>{{ $row->rekening_tujuan ?? '-' }}</td>
+                                <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->keterangan ?? '-' }}</td>
+
+                                <!-- Tombol Aksi Swasta -->
+                                <td style="text-align: center; white-space: nowrap;">
+                                    <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
+                                    <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @else
+                            <!-- ISI TABEL PEMERINTAH -->
+                            <tr>
+                                <td><strong>{{ $row->instansi }}</strong></td>
+                                <td style="max-width: 300px; white-space: normal; word-wrap: break-word;">{{ $row->nama_pengadaan ?? '-' }}</td>
+                                <td>{{ $row->nama_ppk ?? '-' }}</td>
+                                <td class="angka">Rp {{ number_format((float)$row->jumlah_include_ppn, 0, ',', '.') }}</td>
+                                <td class="angka">Rp {{ number_format((float)$row->jumlah_exclude_ppn, 0, ',', '.') }}</td>
+                                <td class="angka" style="color: #d97706;">Rp {{ number_format((float)$row->pph_22, 0, ',', '.') }}</td>
+                                <td class="angka" style="font-weight: bold; color: #047857;">Rp {{ number_format((float)$row->total_diterima, 0, ',', '.') }}</td>
+                                <td class="angka">Rp {{ number_format((float)$row->total_rekening_koran, 0, ',', '.') }}</td>
+                                <td style="text-align: center;">
+                                    <span class="badge {{ $row->status_transfer == 'SUDAH' ? 'bg-success' : 'bg-warning' }}">
+                                        {{ $row->status_transfer ?? 'BELUM' }}
+                                    </span>
+                                </td>
+                                <td>{{ $row->tanggal_transfer ? \Carbon\Carbon::parse($row->tanggal_transfer)->translatedFormat('d F Y') : '-' }}</td>
+                                <td>{{ $row->rekening_tujuan ?? '-' }}</td>
+                                <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->status_pengembalian ?? '-' }}</td>
+                                <td style="text-align: center;">{{ $row->status_faktur ?? '-' }}</td>
+
+                                <!-- Tombol Aksi Pemerintah -->
+                                <td style="text-align: center; white-space: nowrap;">
+                                    <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
+                                    <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endif
                     @empty
-                    <tr>
-                        <td colspan="13" style="padding: 3rem; text-align: center; color: #6b7280; border: 1px solid #e5e7eb;">
-                            Belum ada data uang masuk. Silakan import file Excel atau tambah data baru.
-                        </td>
-                    </tr>
+                        <!-- KONDISI JIKA DATA KOSONG -->
+                        <tr>
+                            <td colspan="{{ $kategori == 'swasta' ? 11 : 14 }}" style="text-align: center; color: #6b7280; padding: 3rem;">
+                                Belum ada data uang masuk untuk kategori {{ strtoupper($kategori) }}.
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        
-        <!-- PAGINATION YANG SUDAH DIPERBAIKI -->
-        <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 10px 0;">
-            <div style="font-size: 0.85rem; color: #6b7280;">
-                Menampilkan {{ $dataUangMasuk->firstItem() ?? 0 }} - {{ $dataUangMasuk->lastItem() ?? 0 }} dari {{ $dataUangMasuk->total() }} data
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
-                <!-- Tombol Previous -->
-                @if($dataUangMasuk->onFirstPage())
-                    <span style="padding: 6px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px; font-size: 0.85rem; cursor: not-allowed;">Previous</span>
-                @else
-                    <a href="{{ $dataUangMasuk->previousPageUrl() }}" style="padding: 6px 12px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.85rem; text-decoration: none; transition: 0.2s;">Previous</a>
-                @endif
 
-                <!-- Nomor Halaman -->
-                @php
-                    $currentPage = $dataUangMasuk->currentPage();
-                    $lastPage = $dataUangMasuk->lastPage();
-                    $start = max(1, $currentPage - 2);
-                    $end = min($lastPage, $currentPage + 2);
-                    
-                    if($lastPage > 5) {
-                        if($currentPage <= 3) {
-                            $start = 1;
-                            $end = 5;
-                        } elseif($currentPage >= $lastPage - 2) {
-                            $start = $lastPage - 4;
-                            $end = $lastPage;
-                        }
-                    }
-                @endphp
-
-                @if($start > 1)
-                    <a href="{{ $dataUangMasuk->url(1) }}" style="padding: 6px 12px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.85rem; text-decoration: none; transition: 0.2s;">1</a>
-                    @if($start > 2)
-                        <span style="padding: 6px 8px; color: #6b7280; font-size: 0.85rem;">...</span>
-                    @endif
-                @endif
-
-                @for($i = $start; $i <= $end; $i++)
-                    @if($i == $currentPage)
-                        <span style="padding: 6px 12px; background: #2563eb; color: white; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">{{ $i }}</span>
-                    @else
-                        <a href="{{ $dataUangMasuk->url($i) }}" style="padding: 6px 12px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.85rem; text-decoration: none; transition: 0.2s;">{{ $i }}</a>
-                    @endif
-                @endfor
-
-                @if($end < $lastPage)
-                    @if($end < $lastPage - 1)
-                        <span style="padding: 6px 8px; color: #6b7280; font-size: 0.85rem;">...</span>
-                    @endif
-                    <a href="{{ $dataUangMasuk->url($lastPage) }}" style="padding: 6px 12px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.85rem; text-decoration: none; transition: 0.2s;">{{ $lastPage }}</a>
-                @endif
-
-                <!-- Tombol Next -->
-                @if($dataUangMasuk->hasMorePages())
-                    <a href="{{ $dataUangMasuk->nextPageUrl() }}" style="padding: 6px 12px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.85rem; text-decoration: none; transition: 0.2s;">Next</a>
-                @else
-                    <span style="padding: 6px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px; font-size: 0.85rem; cursor: not-allowed;">Next</span>
-                @endif
-            </div>
+        <!-- Pagination -->
+        <div style="margin-top: 1.5rem;">
+            {{ $dataUangMasuk->appends(['kategori' => $kategori, 'instansi' => request('instansi'), 'search' => request('search')])->links('pagination::bootstrap-4') }}
         </div>
     </div>
 @endsection

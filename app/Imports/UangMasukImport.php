@@ -1,40 +1,25 @@
 <?php
-
 namespace App\Imports;
 
-use App\Models\UangMasuk;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;
 
-class UangMasukImport implements ToModel, WithHeadingRow
+class UangMasukImport implements WithMultipleSheets, SkipsUnknownSheets
 {
-    public function model(array $row)
+    public function sheets(): array
     {
-        // Skip jika datanya kosong (misal baris kosong di Excel)
-        if (!isset($row['tanggal_tf_dokumen']) || !isset($row['jumlah_include_ppn'])) {
-            return null;
-        }
+        return [
+            'BANTEN' => new PemerintahSheetImport('BANTEN'),
+            'ACEH' => new PemerintahSheetImport('ACEH'),
+            'PADANG' => new PemerintahSheetImport('PADANG'),
+            'SORONG' => new PemerintahSheetImport('SORONG'),
+            'BELUM TAU SIAPA' => new PemerintahSheetImport('BELUM TAU SIAPA'),
+            'SWASTA' => new SwastaSheetImport(),
+        ];
+    }
 
-        // Konversi format tanggal dari Excel ke format Y-m-d untuk MySQL
-        // Biasanya Excel menyimpan tanggal dalam bentuk integer (serial number)
-        $tanggal_transfer = is_numeric($row['tanggal_tf_dokumen']) 
-            ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tanggal_tf_dokumen'])->format('Y-m-d')
-            : Carbon::parse($row['tanggal_tf_dokumen'])->format('Y-m-d');
-
-        return new UangMasuk([
-            'tanggal_transfer'   => $tanggal_transfer,
-            'instansi'           => $row['instansi'] ?? 'TIDAK DIKETAHUI',
-            'nama_pengadaan'     => $row['nama_pengadaan'] ?? null,
-            'nama_ppk'           => $row['nama_ppk'] ?? null,
-            'jumlah_include_ppn' => $row['jumlah_include_ppn'],
-            // Exclude, PPN, dan PPh 22 tidak perlu dimasukkan ke sini 
-            // karena model otomatis menghitungnya (Event saving yang kita buat sebelumnya)
-            'total_rekening_koran' => $row['total_rekening_koran'] ?? null,
-            'status_transfer'    => $row['sudah_tfbelum_tf'] ?? 'BELUM',
-            'rekening_tujuan'    => $row['rekening'] ?? null,
-            'status_pengembalian'=> $row['no_pengembalian'] ?? null,
-            'status_faktur'      => $row['sudah_buat_faktur'] ?? null,
-        ]);
+    public function onUnknownSheet($sheetName)
+    {
+        // Mengabaikan lembar kerja lain yang tidak perlu di-import (seperti Rekap Keseluruhan)
     }
 }

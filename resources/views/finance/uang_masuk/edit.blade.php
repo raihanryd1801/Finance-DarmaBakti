@@ -2,72 +2,74 @@
 
 @section('content')
     <div class="card" style="max-width: 600px; margin: 0 auto;">
-        <h3>Tambah Data Uang Masuk</h3>
+        <h3>✏️ Edit Data Uang Masuk</h3>
         
-        <form action="{{ route('uang_masuk.store') }}" method="POST">
+        <form action="{{ route('uang_masuk.update', $data->id) }}" method="POST">
             @csrf
+            @method('PUT') <!-- Wajib untuk proses Update di Laravel -->
             
             <div class="form-group">
                 <label>Tanggal Transfer</label>
-                <input type="date" name="tanggal_transfer" class="form-control" required>
+                <!-- Jika tanggal ada, kita potong cuma ambil Y-m-d -->
+                <input type="date" name="tanggal_transfer" class="form-control" value="{{ $data->tanggal_transfer ? substr($data->tanggal_transfer, 0, 10) : '' }}" required>
             </div>
 
             <!-- PILIHAN KATEGORI SWASTA/PEMERINTAH -->
             <div class="form-group" style="margin-bottom: 20px;">
                 <label>Kategori Klien</label>
                 <div style="display: flex; gap: 20px; background: #e0f2fe; padding: 10px; border-radius: 6px; border: 1px solid #bae6fd;">
-                    <label style="cursor: pointer;"><input type="radio" name="kategori" value="pemerintah" checked onchange="toggleForm()"> 🏛️ Pemerintah</label>
-                    <label style="cursor: pointer;"><input type="radio" name="kategori" value="swasta" onchange="toggleForm()"> 🏢 Swasta</label>
+                    <label style="cursor: pointer;"><input type="radio" name="kategori" value="pemerintah" {{ $data->kategori == 'pemerintah' ? 'checked' : '' }} onchange="toggleForm()"> 🏛️ Pemerintah</label>
+                    <label style="cursor: pointer;"><input type="radio" name="kategori" value="swasta" {{ $data->kategori == 'swasta' ? 'checked' : '' }} onchange="toggleForm()"> 🏢 Swasta</label>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Instansi / Wilayah</label>
-                <input type="text" name="instansi" class="form-control" placeholder="Cth: PADANG, BANTEN, URAMI, ALFA GROUP" required>
+                <input type="text" name="instansi" class="form-control" value="{{ $data->instansi }}" required>
             </div>
 
             <div class="form-group">
-                <label>Nama Pengadaan / Pekerjaan (Opsional)</label>
-                <input type="text" name="nama_pengadaan" class="form-control" placeholder="Nama pengadaan untuk Pemerintah">
+                <label>Nama Pengadaan / Pekerjaan</label>
+                <input type="text" name="nama_pengadaan" class="form-control" value="{{ $data->nama_pengadaan }}">
             </div>
 
-            <div class="form-group" id="div_keterangan" style="display: none;">
+            <div class="form-group" id="div_keterangan" style="display: {{ $data->kategori == 'swasta' ? 'block' : 'none' }};">
                 <label>Keterangan (Khusus Swasta)</label>
-                <input type="text" name="keterangan" class="form-control" placeholder="Keterangan tambahan untuk Swasta">
+                <input type="text" name="keterangan" class="form-control" value="{{ $data->keterangan }}">
             </div>
 
             <div class="form-group">
-                <label>Rekening Penerima (Pemilik Rekening)</label>
+                <label>Rekening Penerima</label>
                 <select name="rekening_tujuan" class="form-control" required>
                     <option value="">-- Pilih Rekening --</option>
-                    <option value="DARMA">DARMA</option>
-                    <option value="LINTANG">LINTANG</option>
+                    <option value="DARMA" {{ $data->rekening_tujuan == 'DARMA' ? 'selected' : '' }}>DARMA</option>
+                    <option value="LINTANG" {{ $data->rekening_tujuan == 'LINTANG' ? 'selected' : '' }}>LINTANG</option>
                 </select>
             </div>
 
-            <!-- BARU: STATUS TRANSFER -->
+            <!-- BARU: STATUS TRANSFER EDIT -->
             <div class="form-group">
                 <label>Status Transfer</label>
                 <select name="status_transfer" class="form-control" required>
-                    <option value="BELUM">BELUM TF</option>
-                    <option value="SUDAH">SUDAH TF</option>
+                    <option value="BELUM" {{ $data->status_transfer == 'BELUM' ? 'selected' : '' }}>BELUM TF</option>
+                    <option value="SUDAH" {{ $data->status_transfer == 'SUDAH' ? 'selected' : '' }}>SUDAH TF</option>
                 </select>
             </div>
 
-            <!-- NOMINAL TRANSFER -->
+            <!-- NOMINAL TRANSFER (Kita ambil dari include_ppn) -->
             <div class="form-group" style="margin-top: 20px;">
                 <label style="font-weight: bold; font-size: 1rem;">Nominal Dasar Transfer</label>
-                <input type="text" name="jumlah_nominal_input" class="form-control" placeholder="Contoh: 150000000" style="padding: 10px; font-size: 1rem;" required>
+                <input type="text" name="jumlah_nominal_input" class="form-control" value="{{ number_format((float)$data->jumlah_include_ppn, 0, '', '') }}" style="padding: 10px; font-size: 1rem;" required>
             </div>
 
             <!-- CHECKBOX PAJAK -->
             <div class="form-group" style="margin-bottom: 20px; background: #fef3c7; padding: 15px; border-radius: 6px; border: 1px solid #fde68a;">
                 <label>Pengaturan Pajak Otomatis</label>
                 <div style="display: flex; gap: 20px; margin-top: 10px;">
-                    <label style="cursor: pointer;"><input type="checkbox" name="potong_ppn" id="potong_ppn" checked> Hitung PPN 11%</label>
-                    <label style="cursor: pointer;"><input type="checkbox" name="potong_pph" id="potong_pph" checked> Potong PPh 22 (1.5%)</label>
+                    <!-- Deteksi apakah sebelumnya PPN dan PPh terhitung -->
+                    <label style="cursor: pointer;"><input type="checkbox" name="potong_ppn" id="potong_ppn" {{ $data->ppn > 0 ? 'checked' : '' }}> Hitung PPN 11%</label>
+                    <label style="cursor: pointer;"><input type="checkbox" name="potong_pph" id="potong_pph" {{ $data->pph_22 > 0 ? 'checked' : '' }}> Potong PPh 22 (1.5%)</label>
                 </div>
-                <small style="display:block; margin-top:5px; color:#92400e;">*Centang PPN berarti Nominal Dasar dianggap sebagai Harga Kotor (Include PPN).</small>
             </div>
 
             <!-- OPSI POTONGAN ADMIN BANK -->
@@ -75,19 +77,20 @@
                 <div style="flex: 1;">
                     <label>Status Bank (Rekening Koran)</label>
                     <select name="jenis_transfer_bank" id="jenis_transfer_bank" class="form-control" onchange="toggleAdminFee()" required>
-                        <option value="sesama">Sesama Bank (Tanpa Potongan)</option>
-                        <option value="beda">Beda Bank (Ada Biaya Admin)</option>
+                        <option value="sesama" {{ $data->selisih == 0 ? 'selected' : '' }}>Sesama Bank (Tanpa Potongan)</option>
+                        <option value="beda" {{ $data->selisih != 0 ? 'selected' : '' }}>Beda Bank (Ada Biaya Admin)</option>
                     </select>
                 </div>
-                <div style="flex: 1;" id="div_biaya_admin" style="display: none;">
+                <div style="flex: 1;" id="div_biaya_admin" style="display: {{ $data->selisih != 0 ? 'block' : 'none' }};">
                     <label>Nominal Biaya Admin</label>
-                    <input type="number" name="biaya_admin" id="biaya_admin" class="form-control" placeholder="Cth: 2500 atau 30000" value="0">
+                    <!-- Tampilkan nilai positif dari selisih jika ada admin fee -->
+                    <input type="number" name="biaya_admin" id="biaya_admin" class="form-control" value="{{ abs($data->selisih) }}">
                 </div>
             </div>
 
             <div class="form-group" style="margin-top: 20px;">
-                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; font-size: 1rem;">💾 Simpan Data</button>
-                <a href="{{ route('uang_masuk.index') }}" class="btn btn-danger" style="margin-left: 10px; padding: 10px 20px; font-size: 1rem;">Batal</a>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; font-size: 1rem;">💾 Update Data</button>
+                <a href="{{ route('uang_masuk.index', ['kategori' => $data->kategori]) }}" class="btn btn-danger" style="margin-left: 10px; padding: 10px 20px; font-size: 1rem;">Batal</a>
             </div>
         </form>
     </div>
@@ -100,7 +103,6 @@
             
             if (jenis === 'beda') {
                 divAdmin.style.display = 'block';
-                inputAdmin.value = ''; 
                 inputAdmin.required = true;
             } else {
                 divAdmin.style.display = 'none';
@@ -115,11 +117,11 @@
             let divKeterangan = document.getElementById('div_keterangan');
             
             if(kat === 'swasta') {
-                pph.checked = false; // Otomatis lepas centang PPh 22
-                divKeterangan.style.display = 'block'; // Munculkan kolom Keterangan Swasta
+                pph.checked = false; 
+                divKeterangan.style.display = 'block';
             } else {
-                pph.checked = true; // Centang balik kalau Pemerintah
-                divKeterangan.style.display = 'none'; // Sembunyikan kolom Keterangan Swasta
+                pph.checked = true; 
+                divKeterangan.style.display = 'none';
             }
         }
 
