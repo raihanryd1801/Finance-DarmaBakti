@@ -32,15 +32,31 @@ class SwastaSheetImport implements ToModel, WithHeadingRow
             }
         }
 
+        // 1. Ambil jumlah transfer include PPN
         $includePpn = $this->cleanNumber($row['jumlah_transfer_include_ppn'] ?? 0);
+
+        // 2. Hitung / ambil exclude PPN
         $excludePpn = $this->cleanNumber($row['total_exclude_ppn'] ?? 0);
         if ($excludePpn <= 0 && $includePpn > 0) {
             $excludePpn = $includePpn / 1.11;
         }
 
+        // 3. PPN
         $ppn = $this->cleanNumber($row['ppn'] ?? 0);
         if ($ppn <= 0 && $includePpn > 0) {
             $ppn = $includePpn - $excludePpn;
+        }
+
+        // 4. Nilai Nota / Dokumen Swasta
+        $nilaiNota = $this->cleanNumber($row['nilai_nota'] ?? 0);
+
+        // 5. Hitung Selisih Swasta: Total Exclude/Include PPN dikurangi Nilai Nota
+        $pembanding = $excludePpn > 0 ? $excludePpn : $includePpn;
+        
+        if ($nilaiNota > 0) {
+            $selisih = $pembanding - $nilaiNota;
+        } else {
+            $selisih = $this->cleanNumber($row['selisih'] ?? 0);
         }
 
         return new UangMasuk([
@@ -50,11 +66,11 @@ class SwastaSheetImport implements ToModel, WithHeadingRow
             'jumlah_include_ppn' => $includePpn,
             'jumlah_exclude_ppn' => $excludePpn,
             'ppn' => $ppn,
-            'pph_22' => 0,
+            'pph_22' => 0, // Swasta bebas PPh 22
             'total_diterima' => $excludePpn,
             'total_rekening_koran' => $excludePpn,
-            'nilai_nota' => $this->cleanNumber($row['nilai_nota'] ?? 0),
-            'selisih' => $this->cleanNumber($row['selisih'] ?? 0),
+            'nilai_nota' => $nilaiNota > 0 ? $nilaiNota : null,
+            'selisih' => $selisih,
             'rekening_tujuan' => $row['rekening'] ?? 'DARMA',
             'keterangan' => $row['keterangan'] ?? null,
             'status_transfer' => 'SUDAH',

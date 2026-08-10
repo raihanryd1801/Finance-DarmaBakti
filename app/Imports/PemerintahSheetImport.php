@@ -17,7 +17,6 @@ class PemerintahSheetImport implements ToModel, WithHeadingRow
 
     private function cleanNumber($val)
     {
-        // Jika nilai mengandung huruf atau format rumus Excel (seperti Table42), kembalikan 0
         if (is_string($val) && (preg_match('/[a-zA-Z]/', $val) || str_contains($val, 'Table'))) {
             return 0;
         }
@@ -40,16 +39,24 @@ class PemerintahSheetImport implements ToModel, WithHeadingRow
             }
         }
 
-        // Ambil nilai mentah
-        $includePpn = $this->cleanNumber($row['nilai_dokumen'] ?? 0);
-        if ($includePpn <= 0) {
-            $includePpn = $this->cleanNumber($row['jumlah_transfer'] ?? 0);
-        }
+        // 1. Ambil uang fisik (Netto) yang mendarat di Bank
+        $jumlahTransfer = $this->cleanNumber($row['jumlah_transfer'] ?? 0);
+        $totalDiterima = $jumlahTransfer;
+        $totalRekeningKoran = $jumlahTransfer;
 
-        $pph22 = $this->cleanNumber($row['pph_22'] ?? 0);
+        // 2. Ambil Nilai Dokumen Asli
+        $nilaiDokumen = $this->cleanNumber($row['nilai_dokumen'] ?? 0);
+
+        // 3. Ambil Gross Invoice dari Excel kolom 'Total'. 
+        // Jika rumusnya error/0, kita anggap sama dengan nilai dokumen
+        $totalExcel = $this->cleanNumber($row['total'] ?? 0);
+        if ($totalExcel <= 0) {
+            $totalExcel = $nilaiDokumen > 0 ? $nilaiDokumen : $jumlahTransfer;
+        }
+        $includePpn = $totalExcel;
+
+        // 4. Hitung Pajak
         $excludePpn = $this->cleanNumber($row['jumlah_kurang_pph_22'] ?? 0);
-        
-        // Jika exclude PPN gagal dibaca karena rumus Excel, hitung otomatis dari Include PPN
         if ($excludePpn <= 0 && $includePpn > 0) {
             $excludePpn = $includePpn / 1.11;
         }
@@ -58,19 +65,15 @@ class PemerintahSheetImport implements ToModel, WithHeadingRow
         if ($ppn <= 0 && $includePpn > 0) {
             $ppn = $includePpn - $excludePpn;
         }
+        $pph22 = $this->cleanNumber($row['pph_22'] ?? 0);
 
-        // Jika PPh 22 tidak terbaca atau 0 padahal ada exclude PPN, hitung otomatis 1.5%
-        if ($pph22 <= 0 && $excludePpn > 0) {
-            $pph22 = $excludePpn * 0.015;
+        // 5. RUMUS SELISIH PERSIS SEPERTI EXCEL KLIEN (Total - Nilai Dokumen)
+        // 5. RUMUS SELISIH YANG BENAR: Total Rekening Koran - Nilai Dokumen
+        if ($nilaiDokumen > 0) {
+            $selisih = $totalRekeningKoran - $nilaiDokumen;
+        } else {
+            $selisih = $this->cleanNumber($row['selisih'] ?? 0);
         }
-
-        $totalDiterima = $this->cleanNumber($row['jumlah_transfer'] ?? 0);
-        if ($totalDiterima <= 0) {
-            $totalDiterima = $excludePpn - $pph22;
-        }
-
-        $totalRekeningKoran = $this->cleanNumber($row['total'] ?? $totalDiterima);
-        $selisih = $this->cleanNumber($row['selisih'] ?? 0);
 
         return new UangMasuk([
             'kategori' => 'pemerintah',
@@ -83,6 +86,7 @@ class PemerintahSheetImport implements ToModel, WithHeadingRow
             'pph_22' => $pph22,
             'total_diterima' => $totalDiterima,
             'total_rekening_koran' => $totalRekeningKoran,
+            'nilai_nota' => $nilaiDokumen > 0 ? $nilaiDokumen : null,
             'rekening_tujuan' => $row['rekening'] ?? 'DARMA',
             'status_pengembalian' => $row['no_pengembalian'] ?? null,
             'selisih' => $selisih,

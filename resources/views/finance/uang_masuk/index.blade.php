@@ -180,9 +180,14 @@
                                 <td class="angka">Rp {{ number_format((float)$row->jumlah_exclude_ppn, 0, ',', '.') }}</td>
                                 <td class="angka" style="color: #0284c7;">Rp {{ number_format((float)$row->ppn, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->nilai_nota, 0, ',', '.') }}</td>
-                                <td class="angka" style="{{ $row->selisih < 0 ? 'color: red;' : '' }}">
-                                    Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
-                                </td>
+                                <!-- KOLOM SELISIH -->
+<td class="angka" style="{{ $row->selisih < 0 ? 'color: red; font-weight: bold;' : '' }}">
+    @if($row->selisih == 0)
+        <span style="color: #94a3b8;">0</span>
+    @else
+        Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
+    @endif
+</td>
                                 <td><strong>{{ $row->instansi }}</strong></td>
                                 <td>{{ $row->rekening_tujuan ?? '-' }}</td>
                                 <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->keterangan ?? '-' }}</td>
@@ -213,9 +218,14 @@
                                 <td class="angka">Rp {{ number_format((float)$row->nilai_nota, 0, ',', '.') }}</td>
 
                                 <!-- Kolom Selisih -->
-                                <td class="angka" style="{{ $row->selisih < 0 ? 'color: red;' : '' }}">
-                                    Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
-                                </td>
+                                <!-- KOLOM SELISIH -->
+<td class="angka" style="{{ $row->selisih < 0 ? 'color: red; font-weight: bold;' : '' }}">
+    @if($row->selisih == 0)
+        <span style="color: #94a3b8;">0</span>
+    @else
+        Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
+    @endif
+</td>
 
                                 <td style="text-align: center;">
                                     <span class="badge {{ $row->status_transfer == 'SUDAH' ? 'bg-success' : 'bg-warning' }}">

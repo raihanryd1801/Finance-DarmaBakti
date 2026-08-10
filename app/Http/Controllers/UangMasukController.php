@@ -82,10 +82,11 @@ class UangMasukController extends Controller
         $total_diterima = $exclude_ppn - $pph_22;
         $total_rekening_koran = $total_diterima - $biaya_admin;
 
-        // Rumus Selisih: Jika nilai nota diisi, ikuti rumus klien (Total - Nilai Nota), jika tidak pakai selisih rekening koran
+       // RUMUS SELISIH KLIEN: Total (Include PPN) - Nilai Dokumen
         if ($nilai_nota > 0) {
-            $selisih = $total_rekening_koran - $nilai_nota;
+            $selisih = $include_ppn - $nilai_nota;
         } else {
+            // Default jika nilai nota tidak diisi
             $selisih = $total_rekening_koran - $total_diterima;
         }
 
@@ -218,10 +219,11 @@ class UangMasukController extends Controller
         $total_diterima = $exclude_ppn - $pph_22;
         $total_rekening_koran = $total_diterima - $biaya_admin;
 
-        // Rumus Selisih: Berdasarkan nilai nota jika diisi, atau default rekening koran - diterima
+        // RUMUS SELISIH KLIEN: Total (Include PPN) - Nilai Dokumen
         if ($nilai_nota > 0) {
-            $selisih = $total_rekening_koran - $nilai_nota;
+            $selisih = $include_ppn - $nilai_nota;
         } else {
+            // Default jika nilai nota tidak diisi
             $selisih = $total_rekening_koran - $total_diterima;
         }
 
