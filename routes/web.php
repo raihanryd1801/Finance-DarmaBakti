@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UangMasukController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DokumenApiController;
 
 // --- RUTE GUEST (Bebas diakses tanpa login) ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -27,6 +28,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/finance/uang-masuk/{id}', [UangMasukController::class, 'update'])->name('uang_masuk.update');
     Route::delete('/finance/uang-masuk/{id}', [UangMasukController::class, 'destroy'])->name('uang_masuk.destroy');
 
+    // API DOKUMEN (Pastikan ada ->name('dokumen-api.index'))
+    Route::get('/dokumen-api', [DokumenApiController::class, 'index'])->name('dokumen-api.index');
+    Route::get('/dokumen-api/{id}/preview', [DokumenApiController::class, 'preview'])->name('dokumen-api.preview'); // <-- Rute Preview
+    Route::get('/dokumen-api/{id}/download', [DokumenApiController::class, 'download'])->name('dokumen-api.download');
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

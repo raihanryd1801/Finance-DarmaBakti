@@ -183,7 +183,7 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
         <div class="logo-mark">CV</div>
         <div class="brand-text">
             <div class="brand-name">Darma Bakti</div>
-            <div class="brand-tag">Finance App</div>
+            <div class="brand-tag">App</div>
         </div>
     </div>
 
@@ -210,7 +210,14 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
         <li>
             <a href="{{ route('uang_masuk.create') }}" class="{{ request()->routeIs('uang_masuk.create') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke-linecap="round"/></svg>
-                Tambah Data Baru
+                Tambah Uang Masuk
+            </a>
+        </li>
+        <!-- MENU DOKUMEN API -->
+        <li>
+            <a href="{{ route('dokumen-api.index') }}" class="{{ request()->routeIs('dokumen-api*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Data Dokumen Perusahaan
             </a>
         </li>
     </ul>
@@ -243,7 +250,7 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
             <button type="button" class="sidebar-toggle" id="sidebarToggle" title="Sembunyikan / tampilkan panel">
                 <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
             </button>
-            <h3>Dashboard Keuangan</h3>
+            <h3>Dashboard</h3>
         </div>
         <span class="company-name">Skykom CopyRight</span>
     </header>

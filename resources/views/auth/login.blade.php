@@ -305,8 +305,8 @@
         <!-- PANEL KIRI: BRAND + LEDGER PREVIEW -->
         <aside class="brand-panel">
             <div>
-                <div class="brand-mark">FINANCE <span>APP</span></div>
-                <p class="brand-tagline">Satu dasbor untuk memantau uang masuk, status transfer, dan rekapitulasi per instansi.</p>
+                <div class="brand-mark">CV. Darma Bakti <span>APP</span></div>
+                <p class="brand-tagline">Satu dasbor untuk memantau uang masuk, status transfer, rekapitulasi per instansi & Dokumen Controll</p>
 
                 <div class="chart-preview" aria-hidden="true">
                     <div class="chart-label">Arus Kas &middot;</div>
