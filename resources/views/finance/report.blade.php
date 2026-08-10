@@ -18,6 +18,20 @@
 
     .section-title{margin:0 0 1rem;color:#334155;font-size:1.05rem;font-weight:600}
     .empty-state{text-align:center;color:#6b7280;padding:2.5rem}
+
+    /* ===== GRAFIK ===== */
+    .chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:2rem}
+    .chart-card{padding:1.25rem 1.5rem}
+    .chart-card .section-title{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    .chart-card .section-title small{font-size:.72rem;font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0}
+    .chart-canvas-wrap{position:relative;height:280px}
+    .chart-legend-custom{display:flex;flex-wrap:wrap;gap:.6rem 1.1rem;margin-top:1rem;justify-content:center}
+    .chart-legend-custom span{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;color:#475569}
+    .chart-legend-custom i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+    @media (max-width: 900px){
+        .chart-grid{grid-template-columns:1fr}
+    }
 </style>
 
 <div class="page-header">
@@ -77,6 +91,32 @@
     </div>
 </div>
 
+<!-- GRAFIK -->
+@if($rekapPerInstansi->count() > 0)
+<div class="chart-grid">
+    <div class="card chart-card">
+        <h3 class="section-title">
+            Kotor vs Bersih per Instansi
+            <small>Perbandingan nilai transaksi</small>
+        </h3>
+        <div class="chart-canvas-wrap">
+            <canvas id="chartPerInstansi"></canvas>
+        </div>
+    </div>
+
+    <div class="card chart-card">
+        <h3 class="section-title">Komposisi Total</h3>
+        <div class="chart-canvas-wrap" style="height:220px;">
+            <canvas id="chartKomposisi"></canvas>
+        </div>
+        <div class="chart-legend-custom">
+            <span><i style="background:#10b981;"></i> Bersih Diterima</span>
+            <span><i style="background:#f59e0b;"></i> PPh 22</span>
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- TABEL REKAPITULASI -->
 <div class="card">
     <h3 class="section-title">Rincian Per Instansi / Wilayah</h3>
@@ -110,4 +150,96 @@
         </table>
     </div>
 </div>
+
+@if($rekapPerInstansi->count() > 0)
+<script src="{{ asset('js/chart.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const labels = @json($rekapPerInstansi->pluck('instansi')->map(fn($i) => strtoupper($i)));
+    const kotor  = @json($rekapPerInstansi->pluck('sum_include'));
+    const bersih = @json($rekapPerInstansi->pluck('sum_diterima'));
+
+    const totalBersih = {{ (float) $totalDiterima }};
+    const totalPph    = {{ (float) $totalPph22 }};
+
+    const rupiah = (val) => 'Rp ' + Number(val).toLocaleString('id-ID');
+
+    // ===== BAR CHART: Kotor vs Bersih per Instansi =====
+    new Chart(document.getElementById('chartPerInstansi'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Total Kotor (Include PPN)',
+                    data: kotor,
+                    backgroundColor: '#2563eb',
+                    borderRadius: 4,
+                    maxBarThickness: 28
+                },
+                {
+                    label: 'Total Bersih Diterima',
+                    data: bersih,
+                    backgroundColor: '#10b981',
+                    borderRadius: 4,
+                    maxBarThickness: 28
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 }, color: '#475569' }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ctx.dataset.label + ': ' + rupiah(ctx.raw)
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+                y: {
+                    grid: { color: '#f1f5f9' },
+                    ticks: {
+                        color: '#64748b',
+                        font: { size: 11 },
+                        callback: (val) => 'Rp ' + (val / 1000000).toLocaleString('id-ID') + 'jt'
+                    }
+                }
+            }
+        }
+    });
+
+    // ===== DOUGHNUT CHART: Komposisi Total =====
+    new Chart(document.getElementById('chartKomposisi'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Bersih Diterima', 'PPh 22'],
+            datasets: [{
+                data: [totalBersih, totalPph],
+                backgroundColor: ['#10b981', '#f59e0b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ctx.label + ': ' + rupiah(ctx.raw)
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+@endif
 @endsection

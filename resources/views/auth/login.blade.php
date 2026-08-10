@@ -309,7 +309,7 @@
                 <p class="brand-tagline">Satu dasbor untuk memantau uang masuk, status transfer, dan rekapitulasi per instansi.</p>
 
                 <div class="chart-preview" aria-hidden="true">
-                    <div class="chart-label">Arus Kas &middot; Ilustrasi</div>
+                    <div class="chart-label">Arus Kas &middot;</div>
                     <svg class="chart-svg" viewBox="0 0 300 110" xmlns="http://www.w3.org/2000/svg">
                         <!-- garis grid horizontal -->
                         <line class="chart-grid" x1="0" y1="20" x2="300" y2="20" />
