@@ -182,7 +182,7 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
     <div class="sidebar-brand">
         <div class="logo-mark">CV</div>
         <div class="brand-text">
-            <div class="brand-name">Darma Bakti</div>
+            <div class="brand-name">DARMA BAKTI</div>
             <div class="brand-tag">App</div>
         </div>
     </div>
