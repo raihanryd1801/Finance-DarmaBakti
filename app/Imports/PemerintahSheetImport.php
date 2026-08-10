@@ -55,7 +55,7 @@ class PemerintahSheetImport implements ToModel, WithHeadingRow
         }
         $includePpn = $totalExcel;
 
-        // 4. Hitung Pajak
+        // 4. Hitung Pajak (PPN & PPh 22)
         $excludePpn = $this->cleanNumber($row['jumlah_kurang_pph_22'] ?? 0);
         if ($excludePpn <= 0 && $includePpn > 0) {
             $excludePpn = $includePpn / 1.11;
@@ -65,7 +65,19 @@ class PemerintahSheetImport implements ToModel, WithHeadingRow
         if ($ppn <= 0 && $includePpn > 0) {
             $ppn = $includePpn - $excludePpn;
         }
-        $pph22 = $this->cleanNumber($row['pph_22'] ?? 0);
+
+        // Cek berbagai kemungkinan nama header PPh 22 di Excel
+        $pph22 = $this->cleanNumber(
+            $row['pph_22'] ?? 
+            $row['pph22'] ?? 
+            $row['pajak_pph_22'] ?? 
+            0
+        );
+
+        // FALLBACK OTOMATIS: Jika PPh 22 di Excel kosong/0, hitung otomatis 1.5% dari Exclude PPN
+        if ($pph22 <= 0 && $excludePpn > 0) {
+            $pph22 = $excludePpn * 0.015;
+        }
 
         // 5. RUMUS SELISIH PERSIS SEPERTI EXCEL KLIEN (Total - Nilai Dokumen)
         // 5. RUMUS SELISIH YANG BENAR: Total Rekening Koran - Nilai Dokumen

@@ -93,13 +93,15 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
 <body>
 
 <aside class="sidebar">
-    <div class="sidebar-brand">FINANCE <span>APP</span></div>
+    <div class="sidebar-brand">CV. DARMA BAKTI <span>APP</span></div>
     <ul class="sidebar-menu">
         <li><a href="{{ route('finance.report') }}" class="{{ request()->routeIs('finance.report') ? 'active' : '' }}">Data Report</a></li>
-        <li><a href="{{ route('uang_masuk.create') }}" class="{{ request()->routeIs('uang_masuk.create') ? 'active' : '' }}">Tambah Data Baru</a></li>
+        
         <li><a href="{{ route('uang_masuk.index', ['kategori' => 'pemerintah']) }}" class="{{ request('kategori') != 'swasta' && request()->routeIs('uang_masuk.index') ? 'active' : '' }}">Uang Masuk Pemerintah</a></li>
-            <li><a href="{{ route('uang_masuk.index', ['kategori' => 'swasta']) }}" class="{{ request('kategori') == 'swasta' ? 'active' : '' }}">Uang Masuk Swasta</a></li>
+        <li><a href="{{ route('uang_masuk.index', ['kategori' => 'swasta']) }}" class="{{ request('kategori') == 'swasta' ? 'active' : '' }}">Uang Masuk Swasta</a></li>
+        <li><a href="{{ route('uang_masuk.create') }}" class="{{ request()->routeIs('uang_masuk.create') ? 'active' : '' }}">Tambah Data Baru</a></li>
     </ul>
+    
     <div class="sidebar-footer">
         @auth
             <div class="user-email" title="{{ Auth::user()->email }}">{{ Auth::user()->email }}</div>
@@ -116,7 +118,7 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
 <div class="main-wrapper">
     <header class="main-header">
         <h3>Dashboard Keuangan</h3>
-        <span class="company-name">CV. Darma Bakti</span>
+        <span class="company-name">Skykom CopyRight</span>
     </header>
     <div class="container">
         @yield('content')
