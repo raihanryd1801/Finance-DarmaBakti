@@ -13,21 +13,24 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/finance/uang-masuk');
-        }
+    // ambil status checkbox "remember" dari form (true kalau dicentang)
+    $remember = $request->boolean('remember');
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah, Bang!',
-        ]);
+    if (Auth::attempt($credentials, $remember)) {
+        $request->session()->regenerate();
+        return redirect()->intended('/finance/uang-masuk');
     }
+
+    return back()->withErrors([
+        'email' => 'Email atau password salah, Bang!',
+    ]);
+}
 
     public function logout(Request $request)
     {
