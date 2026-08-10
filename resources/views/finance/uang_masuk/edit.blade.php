@@ -72,6 +72,13 @@
                 </div>
             </div>
 
+            <!-- KOLOM TAMBAHAN UNTUK NILAI DOKUMEN / NOTA -->
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Nilai Dokumen / Nota (Opsional)</label>
+                <input type="text" name="nilai_nota" id="input_nilai_nota" class="form-control" placeholder="Contoh: 113.512.763" value="{{ isset($data) ? number_format((float)$data->nilai_nota, 0, ',', '.') : old('nilai_nota') }}">
+                <small style="color: #64748b;">*Opsional: Ketik angka, titik ribuan akan muncul otomatis.</small>
+            </div>
+
             <!-- OPSI POTONGAN ADMIN BANK -->
             <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px; background: #f9fafb; padding: 15px; border-radius: 6px; border: 1px solid #e5e7eb;">
                 <div style="flex: 1;">
@@ -125,7 +132,7 @@
             }
         }
 
-        // Fungsi untuk memformat angka menjadi format Rupiah (misal: 1000000 jadi 1.000.000)
+        // Fungsi pembantu format Rupiah
         function formatRupiah(angka, prefix) {
             var number_string = angka.replace(/[^,\d]/g, '').toString(),
                 split   = number_string.split(','),
@@ -142,18 +149,22 @@
             return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
         }
 
-        // Terapkan ke input Nominal Transfer saat user mengetik
+        // Terapkan ke input Nominal Transfer & Nilai Nota saat user mengetik
         document.addEventListener("DOMContentLoaded", function() {
+            // 1. Untuk Nominal Dasar Transfer
             var inputNominal = document.querySelector('input[name="jumlah_nominal_input"]');
-            
             if (inputNominal) {
-                // Format saat halaman dimuat (berguna untuk form Edit)
-                if(inputNominal.value) {
-                    inputNominal.value = formatRupiah(inputNominal.value, '');
-                }
-
-                // Format secara real-time saat user mengetik
+                if(inputNominal.value) inputNominal.value = formatRupiah(inputNominal.value, '');
                 inputNominal.addEventListener('keyup', function(e) {
+                    this.value = formatRupiah(this.value, '');
+                });
+            }
+
+            // 2. Untuk Nilai Dokumen / Nota
+            var inputNota = document.getElementById('input_nilai_nota');
+            if (inputNota) {
+                if(inputNota.value) inputNota.value = formatRupiah(inputNota.value, '');
+                inputNota.addEventListener('keyup', function(e) {
                     this.value = formatRupiah(this.value, '');
                 });
             }

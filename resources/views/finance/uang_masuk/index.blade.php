@@ -55,7 +55,6 @@
             pointer-events: none;
         }
 
-        /* Jaga-jaga kalau suatu saat pagination pakai SVG lagi, ukurannya tetap dikunci */
         .pagination svg {
             width: 16px !important;
             height: 16px !important;
@@ -128,6 +127,7 @@
                 </div>
             </form>
         </div>
+
         <!-- Tabel Full Screen -->
         <div class="table-container" style="width: 100%; overflow-x: auto;">
             <table class="finance-table" style="width: 100%;">
@@ -148,7 +148,7 @@
                             <th style="text-align: center;">Aksi</th>
                         </tr>
                     @else
-                        <!-- HEADER TABEL PEMERINTAH -->
+                        <!-- HEADER TABEL PEMERINTAH (Lengkap dengan Nilai Dokumen & Selisih) -->
                         <tr>
                             <th>Instansi</th>
                             <th>Nama Pengadaan</th>
@@ -158,6 +158,8 @@
                             <th>PPh 22</th>
                             <th>Total yang di terima</th>
                             <th>Total Rekening Koran</th>
+                            <th>Nilai Dokumen</th>
+                            <th>Selisih</th>
                             <th>SUDAH TF/BELUM TF</th>
                             <th>Tanggal TF Rek</th>
                             <th>Rekening</th>
@@ -206,6 +208,15 @@
                                 <td class="angka" style="color: #d97706;">Rp {{ number_format((float)$row->pph_22, 0, ',', '.') }}</td>
                                 <td class="angka" style="font-weight: bold; color: #047857;">Rp {{ number_format((float)$row->total_diterima, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->total_rekening_koran, 0, ',', '.') }}</td>
+
+                                <!-- Kolom Nilai Dokumen -->
+                                <td class="angka">Rp {{ number_format((float)$row->nilai_nota, 0, ',', '.') }}</td>
+
+                                <!-- Kolom Selisih -->
+                                <td class="angka" style="{{ $row->selisih < 0 ? 'color: red;' : '' }}">
+                                    Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
+                                </td>
+
                                 <td style="text-align: center;">
                                     <span class="badge {{ $row->status_transfer == 'SUDAH' ? 'bg-success' : 'bg-warning' }}">
                                         {{ $row->status_transfer ?? 'BELUM' }}
@@ -230,7 +241,7 @@
                     @empty
                         <!-- KONDISI JIKA DATA KOSONG -->
                         <tr>
-                            <td colspan="{{ $kategori == 'swasta' ? 11 : 14 }}" style="text-align: center; color: #6b7280; padding: 3rem;">
+                            <td colspan="{{ $kategori == 'swasta' ? 11 : 16 }}" style="text-align: center; color: #6b7280; padding: 3rem;">
                                 Belum ada data uang masuk untuk kategori {{ strtoupper($kategori) }}.
                             </td>
                         </tr>
@@ -241,7 +252,13 @@
 
         <!-- Pagination -->
         <div style="margin-top: 1.5rem;">
-            {{ $dataUangMasuk->appends(['kategori' => $kategori, 'instansi' => request('instansi'), 'search' => request('search')])->links('pagination::bootstrap-4') }}
+            {{ $dataUangMasuk->appends([
+                'kategori' => $kategori,
+                'instansi' => request('instansi'),
+                'search' => request('search'),
+                'start_date' => request('start_date'),
+                'end_date' => request('end_date')
+            ])->links('pagination::bootstrap-4') }}
         </div>
     </div>
 @endsection

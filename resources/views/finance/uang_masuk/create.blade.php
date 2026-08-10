@@ -70,6 +70,13 @@
                 <small style="display:block; margin-top:5px; color:#92400e;">*Centang PPN berarti Nominal Dasar dianggap sebagai Harga Kotor (Include PPN).</small>
             </div>
 
+            <!-- KOLOM TAMBAHAN UNTUK NILAI DOKUMEN / NOTA -->
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Nilai Dokumen / Nota (Opsional)</label>
+                <input type="text" name="nilai_nota" id="input_nilai_nota" class="form-control" placeholder="Contoh: 113.512.763" value="{{ isset($data) ? number_format((float)$data->nilai_nota, 0, ',', '.') : old('nilai_nota') }}">
+                <small style="color: #64748b;">*Opsional: Ketik angka, titik ribuan akan muncul otomatis.</small>
+            </div>
+
             <!-- OPSI POTONGAN ADMIN BANK -->
             <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px; background: #f9fafb; padding: 15px; border-radius: 6px; border: 1px solid #e5e7eb;">
                 <div style="flex: 1;">

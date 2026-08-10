@@ -48,13 +48,22 @@ class UangMasukController extends Controller
     // --- METHOD STORE ---
     public function store(Request $request)
     {
-        $nominal = preg_replace('/[^0-9.]/', '', $request->jumlah_nominal_input);
-        $nominal = $nominal === '' ? 0 : (float) $nominal;
+        // 1. Bersihkan input nominal Rupiah (Sudah Benar)
+        $input_string = $request->jumlah_nominal_input ?? '0';
+        $clean_string = str_replace(['Rp', 'rp', ' ', '.'], '', $input_string);
+        $clean_string = str_replace(',', '.', $clean_string);
+        $nominal = (float) $clean_string;
         
+        // Bersihkan input Nilai Nota/Dokumen jika ada (untuk hitung selisih markup)
+        $input_nota_str = $request->nilai_nota ?? '0';
+        $clean_nota = str_replace(['Rp', 'rp', ' ', '.'], '', $input_nota_str);
+        $nilai_nota = (float) str_replace(',', '.', $clean_nota);
+
         $biaya_admin = $request->jenis_transfer_bank == 'beda' ? (float) preg_replace('/[^0-9.]/', '', $request->biaya_admin) : 0;
         
         $include_ppn = 0; $exclude_ppn = 0; $ppn = 0; $pph_22 = 0;
 
+        // 2. LOGIKA CENTANG PPN (11%)
         if ($request->has('potong_ppn')) {
             $include_ppn = $nominal;
             $exclude_ppn = $include_ppn / 1.11;
@@ -64,14 +73,23 @@ class UangMasukController extends Controller
             $exclude_ppn = $nominal;
         }
 
+        // 3. LOGIKA CENTANG PPH 22 (1.5%)
         if ($request->has('potong_pph')) {
             $pph_22 = $exclude_ppn * 0.015;
         }
 
+        // 4. Hitung Akhir
         $total_diterima = $exclude_ppn - $pph_22;
         $total_rekening_koran = $total_diterima - $biaya_admin;
-        $selisih = $total_rekening_koran - $total_diterima;
 
+        // Rumus Selisih: Jika nilai nota diisi, ikuti rumus klien (Total - Nilai Nota), jika tidak pakai selisih rekening koran
+        if ($nilai_nota > 0) {
+            $selisih = $total_rekening_koran - $nilai_nota;
+        } else {
+            $selisih = $total_rekening_koran - $total_diterima;
+        }
+
+        // 5. Simpan ke Database (Perhatikan status_transfer tidak duplikasi lagi)
         UangMasuk::create([
             'tanggal_transfer' => $request->tanggal_transfer,
             'kategori' => $request->kategori,
@@ -79,15 +97,15 @@ class UangMasukController extends Controller
             'nama_pengadaan' => $request->nama_pengadaan,
             'keterangan' => $request->keterangan,
             'rekening_tujuan' => $request->rekening_tujuan,
-            'status_transfer' => $request->status_transfer,
+            'status_transfer' => $request->status_transfer ?? 'BELUM', // Mengambil dari input form
             'jumlah_include_ppn' => $include_ppn,
             'jumlah_exclude_ppn' => $exclude_ppn,
             'ppn' => $ppn,
             'pph_22' => $pph_22,
             'total_diterima' => $total_diterima,
             'total_rekening_koran' => $total_rekening_koran,
+            'nilai_nota' => $nilai_nota > 0 ? $nilai_nota : null,
             'selisih' => $selisih,
-            'status_transfer' => 'BELUM',
         ]);
 
         return redirect()->route('uang_masuk.index', ['kategori' => $request->kategori])
@@ -159,17 +177,27 @@ class UangMasukController extends Controller
     }
 
     // --- METHOD UPDATE ---
+    // --- METHOD UPDATE ---
     public function update(Request $request, $id)
     {
         $uangMasuk = UangMasuk::findOrFail($id);
 
-        // 1. Bersihkan input
-        $nominal = preg_replace('/[^0-9.]/', '', $request->jumlah_nominal_input);
-        $nominal = $nominal === '' ? 0 : (float) $nominal;
-        
+        // 1. Bersihkan input nominal Rupiah (Sudah Benar)
+        $input_string = $request->jumlah_nominal_input ?? '0';
+        $clean_string = str_replace(['Rp', 'rp', ' ', '.'], '', $input_string);
+        $clean_string = str_replace(',', '.', $clean_string);
+        $nominal = (float) $clean_string;
+
+        // 2. Bersihkan input Nilai Nota / Dokumen
+        $input_nota_str = $request->nilai_nota ?? '0';
+        $clean_nota = str_replace(['Rp', 'rp', ' ', '.'], '', $input_nota_str);
+        $nilai_nota = (float) str_replace(',', '.', $clean_nota);
+
         $biaya_admin = $request->jenis_transfer_bank == 'beda' ? (float) preg_replace('/[^0-9.]/', '', $request->biaya_admin) : 0;
         
         $include_ppn = 0; $exclude_ppn = 0; $ppn = 0; $pph_22 = 0;
+
+        // ... (lanjutkan ke logika centang PPN seperti biasa)
 
         // 2. LOGIKA CENTANG PPN (11%)
         if ($request->has('potong_ppn')) {
@@ -189,7 +217,13 @@ class UangMasukController extends Controller
         // 4. Hitung Akhir
         $total_diterima = $exclude_ppn - $pph_22;
         $total_rekening_koran = $total_diterima - $biaya_admin;
-        $selisih = $total_rekening_koran - $total_diterima;
+
+        // Rumus Selisih: Berdasarkan nilai nota jika diisi, atau default rekening koran - diterima
+        if ($nilai_nota > 0) {
+            $selisih = $total_rekening_koran - $nilai_nota;
+        } else {
+            $selisih = $total_rekening_koran - $total_diterima;
+        }
 
         // 5. Update ke Database
         $uangMasuk->update([
@@ -206,6 +240,7 @@ class UangMasukController extends Controller
             'pph_22' => $pph_22,
             'total_diterima' => $total_diterima,
             'total_rekening_koran' => $total_rekening_koran,
+            'nilai_nota' => $nilai_nota > 0 ? $nilai_nota : null,
             'selisih' => $selisih,
         ]);
 
