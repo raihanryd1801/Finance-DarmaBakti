@@ -29,9 +29,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/finance/uang-masuk/{id}', [UangMasukController::class, 'destroy'])->name('uang_masuk.destroy');
 
     // API DOKUMEN (Pastikan ada ->name('dokumen-api.index'))
-    Route::get('/dokumen-api', [DokumenApiController::class, 'index'])->name('dokumen-api.index');
-    Route::get('/dokumen-api/{id}/preview', [DokumenApiController::class, 'preview'])->name('dokumen-api.preview'); // <-- Rute Preview
-    Route::get('/dokumen-api/{id}/download', [DokumenApiController::class, 'download'])->name('dokumen-api.download');
+    // API DOKUMEN (Dengan prefix /finance/)
+    Route::get('/finance/dokumen-api', [DokumenApiController::class, 'index'])->name('dokumen-api.index');
+    Route::get('/finance/dokumen-api/{id}/preview', [DokumenApiController::class, 'preview'])->name('dokumen-api.preview');
+    Route::get('/finance/dokumen-api/{id}/download', [DokumenApiController::class, 'download'])->name('dokumen-api.download');
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
