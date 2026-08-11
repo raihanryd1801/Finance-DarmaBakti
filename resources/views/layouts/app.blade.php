@@ -187,7 +187,7 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
         </div>
     </div>
 
-    <div class="sidebar-section-label">Menu</div>
+    <div class="sidebar-section-label">Finance</div>
     <ul class="sidebar-menu">
         <li>
             <a href="{{ route('finance.report') }}" class="{{ request()->routeIs('finance.report') ? 'active' : '' }}">
@@ -213,11 +213,25 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
                 Tambah Uang Masuk
             </a>
         </li>
-        <!-- MENU DOKUMEN API -->
+        <div class="sidebar-section-label">Dokumen</div>
         <li>
             <a href="{{ route('dokumen-api.index') }}" class="{{ request()->routeIs('dokumen-api*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 Data Dokumen Perusahaan
+            </a>
+        </li>
+        <div class="sidebar-section-label">Invoice</div>
+        <li>
+            <a href="{{ route('invoice.index') }}" class="{{ request()->routeIs('invoice.index*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Cetak Invoice
+            </a>
+        </li>
+        <!-- MENU DATA BARANG -->
+        <li>
+            <a href="{{ route('barang.index') }}" class="{{ request()->routeIs('barang*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24"><path d="M20 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 2 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 20 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Master Data Barang
             </a>
         </li>
     </ul>
