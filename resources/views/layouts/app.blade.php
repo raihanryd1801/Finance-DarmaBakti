@@ -227,11 +227,22 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
                 Master Data Barang
             </a>
         </li>
+        <li>
+            <a href="{{ route('rekening.index') }}" class="{{ request()->routeIs('rekening*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="1" y1="10" x2="23" y2="10"><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Master Data Rekening
+            </a>
+        </li>
         <div class="sidebar-section-label">Dokumen</div>
         <li>
-            <a href="{{ route('dokumen-api.index') }}" class="{{ request()->routeIs('dokumen-api*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Data Dokumen Perusahaan
+        <a href="{{ route('dokumen-api.index') }}" class="{{ request()->routeIs('dokumen-api*') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>
+            <path d="M8 12h8"/>
+            <path d="M8 16h5"/>
+        </svg>
+        Data Dokumen Perusahaan
             </a>
         </li>
         

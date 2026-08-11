@@ -8,7 +8,18 @@
             @csrf
             <!-- HEADER INVOICE -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 8px;">
-                <div>
+            <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Pembayaran ke Rekening</label>
+                    <select name="rekening_id" class="form-control" required style="width: 100%; padding: 8px;">
+                        <option value="">-- Pilih Rekening --</option>
+                        @foreach($rekenings as $rek)
+                            <option value="{{ $rek->id }}" {{ $invoice->rekening_id == $rek->id ? 'selected' : '' }}>
+                                {{ $rek->nama_bank }} - {{ $rek->nomor_rekening }} (a.n {{ $rek->atas_nama }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>    
+            <div>
                     <label style="display: block; font-weight: bold; margin-bottom: 5px;">No Invoice</label>
                     <input type="text" value="{{ $invoice->no_invoice }}" class="form-control" readonly style="width: 100%; padding: 8px; background: #e2e8f0;">
                 </div>

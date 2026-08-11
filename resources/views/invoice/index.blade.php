@@ -417,6 +417,10 @@
                                                     @csrf
                                                     <button type="submit" class="dropdown-item pemerintah">Masuk Pemerintah</button>
                                                 </form>
+                                                <form action="{{ route('invoice.lunas', [$inv->id, 'hanya_status']) }}" method="POST" onsubmit="return confirm('Yakin invoice ini di Tandai sebagai LUNAS? Invoice tidak bisa di delete jika Status LUNAS');">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item hanya_status">Lunas Aja</button>
+                                                </form>
                                             </div>
                                         </div>
 

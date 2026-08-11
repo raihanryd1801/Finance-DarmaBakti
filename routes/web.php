@@ -15,47 +15,53 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [UangMasukController::class, 'index'])->name('home');
 
     // Report
-    Route::get('/finance/report', [UangMasukController::class, 'report'])->name('finance.report');
+    Route::get('/darmapp/report', [UangMasukController::class, 'report'])->name('finance.report');
 
     // Keuangan / Uang Masuk
-    Route::get('/finance/uang-masuk', [UangMasukController::class, 'index'])->name('uang_masuk.index');
-    Route::get('/finance/uang-masuk/create', [UangMasukController::class, 'create'])->name('uang_masuk.create');
-    Route::post('/finance/uang-masuk', [UangMasukController::class, 'store'])->name('uang_masuk.store');
-    Route::post('/finance/uang-masuk/import', [UangMasukController::class, 'import'])->name('uang_masuk.import');
+    Route::get('/darmapp/uang-masuk', [UangMasukController::class, 'index'])->name('uang_masuk.index');
+    Route::get('/darmapp/uang-masuk/create', [UangMasukController::class, 'create'])->name('uang_masuk.create');
+    Route::post('/darmapp/uang-masuk', [UangMasukController::class, 'store'])->name('uang_masuk.store');
+    Route::post('/darmappuang-masuk/import', [UangMasukController::class, 'import'])->name('uang_masuk.import');
 
     
 
     // Edit, Update, Delete
-    Route::get('/finance/uang-masuk/{id}/edit', [UangMasukController::class, 'edit'])->name('uang_masuk.edit');
-    Route::put('/finance/uang-masuk/{id}', [UangMasukController::class, 'update'])->name('uang_masuk.update');
-    Route::delete('/finance/uang-masuk/{id}', [UangMasukController::class, 'destroy'])->name('uang_masuk.destroy');
+    Route::get('/darmapp/uang-masuk/{id}/edit', [UangMasukController::class, 'edit'])->name('uang_masuk.edit');
+    Route::put('/darmapp/uang-masuk/{id}', [UangMasukController::class, 'update'])->name('uang_masuk.update');
+    Route::delete('/darmapp/uang-masuk/{id}', [UangMasukController::class, 'destroy'])->name('uang_masuk.destroy');
 
     // API DOKUMEN (Pastikan ada ->name('dokumen-api.index'))
     // API DOKUMEN (Dengan prefix /finance/)
-    Route::get('/finance/dokumen-api', [DokumenApiController::class, 'index'])->name('dokumen-api.index');
-    Route::get('/finance/dokumen-api/{id}/preview', [DokumenApiController::class, 'preview'])->name('dokumen-api.preview');
-    Route::get('/finance/dokumen-api/{id}/download', [DokumenApiController::class, 'download'])->name('dokumen-api.download');
+    Route::get('/darmapp/dokumen-api', [DokumenApiController::class, 'index'])->name('dokumen-api.index');
+    Route::get('/darmapp/dokumen-api/{id}/preview', [DokumenApiController::class, 'preview'])->name('dokumen-api.preview');
+    Route::get('/darmapp/dokumen-api/{id}/download', [DokumenApiController::class, 'download'])->name('dokumen-api.download');
 
     // --- MODULE INVOICE PENJUALAN ---
-    Route::get('/darma/invoice', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoice.index');
-    Route::get('/darma/invoice/create', [App\Http\Controllers\InvoiceController::class, 'create'])->name('invoice.create');
-    Route::post('/darma/invoice/store', [App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
-    Route::get('/darma/invoice/{id}/print', [App\Http\Controllers\InvoiceController::class, 'print'])->name('invoice.print');
+    Route::get('/darmapp/invoice', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoice.index');
+    Route::get('/darmapp/invoice/create', [App\Http\Controllers\InvoiceController::class, 'create'])->name('invoice.create');
+    Route::post('/darmapp/invoice/store', [App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
+    Route::get('/darmapp//invoice/{id}/print', [App\Http\Controllers\InvoiceController::class, 'print'])->name('invoice.print');
     //LUNAS
-    Route::post('/darma/invoice/{id}/lunas/{kategori}', [App\Http\Controllers\InvoiceController::class, 'tandaiLunas'])->name('invoice.lunas');
-    Route::get('/darma/invoice/{id}/edit', [App\Http\Controllers\InvoiceController::class, 'edit'])->name('invoice.edit');
-    Route::post('/darma/invoice/{id}/update', [App\Http\Controllers\InvoiceController::class, 'update'])->name('invoice.update');
-    Route::post('/darma/invoice/{id}/destroy', [App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoice.destroy');
+    Route::post('/darmapp//invoice/{id}/lunas/{kategori}', [App\Http\Controllers\InvoiceController::class, 'tandaiLunas'])->name('invoice.lunas');
+    Route::get('/darmapp//invoice/{id}/edit', [App\Http\Controllers\InvoiceController::class, 'edit'])->name('invoice.edit');
+    Route::post('/darmapp//invoice/{id}/update', [App\Http\Controllers\InvoiceController::class, 'update'])->name('invoice.update');
+    Route::post('/darmapp//invoice/{id}/destroy', [App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoice.destroy');
 
     // --- MODULE MASTER DATA BARANG ---
-    Route::get('/darma/barang', [App\Http\Controllers\BarangController::class, 'index'])->name('barang.index');
-    Route::get('/darma/create', [App\Http\Controllers\BarangController::class, 'create'])->name('barang.create');
-    Route::post('/darma/store', [App\Http\Controllers\BarangController::class, 'store'])->name('barang.store');
-    Route::get('/darma/{id}/edit', [App\Http\Controllers\BarangController::class, 'edit'])->name('barang.edit');
-    Route::post('/darma/{id}/update', [App\Http\Controllers\BarangController::class, 'update'])->name('barang.update');
-    Route::post('/darma/{id}/destroy', [App\Http\Controllers\BarangController::class, 'destroy'])->name('barang.destroy');
+    Route::get('/darmapp/barang', [App\Http\Controllers\BarangController::class, 'index'])->name('barang.index');
+    Route::get('/darmapp//create', [App\Http\Controllers\BarangController::class, 'create'])->name('barang.create');
+    Route::post('/darmapp/store', [App\Http\Controllers\BarangController::class, 'store'])->name('barang.store');
+    Route::get('/darmapp//{id}/edit', [App\Http\Controllers\BarangController::class, 'edit'])->name('barang.edit');
+    Route::post('/darmapp//{id}/update', [App\Http\Controllers\BarangController::class, 'update'])->name('barang.update');
+    Route::post('/darmapp//{id}/destroy', [App\Http\Controllers\BarangController::class, 'destroy'])->name('barang.destroy');
 
-    
+    // --- MODULE MASTER DATA REKENING ---
+    Route::get('/darmapp/rekening', [App\Http\Controllers\RekeningController::class, 'index'])->name('rekening.index');
+    Route::get('/darmapp/rekening/create', [App\Http\Controllers\RekeningController::class, 'create'])->name('rekening.create');
+    Route::post('/darmapp/rekening/store', [App\Http\Controllers\RekeningController::class, 'store'])->name('rekening.store');
+    Route::get('/darmapp/rekening/{id}/edit', [App\Http\Controllers\RekeningController::class, 'edit'])->name('rekening.edit');
+    Route::post('/darmapp/rekening/{id}/update', [App\Http\Controllers\RekeningController::class, 'update'])->name('rekening.update');
+    Route::post('/darmapp/rekening/{id}/destroy', [App\Http\Controllers\RekeningController::class, 'destroy'])->name('rekening.destroy');
     
 
     // Logout

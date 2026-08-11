@@ -16,4 +16,9 @@ class Invoice extends Model
     {
         return $this->hasMany(InvoiceItem::class);
     }
+    // Tambahkan ini di bawah relasi items()
+    public function rekening()
+    {
+        return $this->belongsTo(Rekening::class, 'rekening_id');
+    }
 }

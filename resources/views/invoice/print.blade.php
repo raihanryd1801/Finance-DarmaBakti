@@ -222,7 +222,11 @@
                     
                     <div style="font-size: 10pt; line-height: 1.4;">
                         <strong>Bank Transfer / Cek:</strong><br>
-                        <strong>BNI 0430643011 an. DANURI</strong><br><br>
+                        @if($invoice->rekening)
+                            <strong>{{ $invoice->rekening->nama_bank }} {{ $invoice->rekening->nomor_rekening }} an. {{ $invoice->rekening->atas_nama }}</strong><br><br>
+                        @else
+                            <strong>(Informasi rekening belum dipilih)</strong><br><br>
+                        @endif
                         <span style="font-size: 9pt; font-weight: bold;">TIDAK MENERIMA PEMBAYARAN MELALUI BG<br>HANYA MENERIMA TRANSFER</span>
                     </div>
                 </td>

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UangMasuk; // Tambahkan ini di atas!
+use App\Models\UangMasuk;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Rekening;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 
 class InvoiceController extends Controller
 {
@@ -48,26 +48,27 @@ class InvoiceController extends Controller
 
     public function create()
     {
-        // Generate No Invoice Otomatis
         $bulan = date('m');
         $tahun = date('y');
         $lastInvoice = Invoice::whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count();
         $urut = str_pad($lastInvoice + 1, 3, '0', STR_PAD_LEFT);
         $no_invoice = "INV-DBM/{$bulan}-{$tahun}/{$urut}";
 
-        // Tarik semua data barang dari database
         $barangs = \App\Models\Barang::orderBy('nama_barang', 'asc')->get();
+        $rekenings = Rekening::orderBy('nama_bank', 'asc')->get(); 
 
-        return view('invoice.create', compact('no_invoice', 'barangs'));
+        return view('invoice.create', compact('no_invoice', 'barangs', 'rekenings'));
     }
 
     public function store(Request $request)
     {
+        // 1. Validasi Input (Termasuk rekening_id)
         $request->validate([
-            'no_invoice' => 'required|unique:invoices',
-            'tanggal' => 'required|date',
+            'no_invoice'     => 'required|unique:invoices',
+            'tanggal'        => 'required|date',
             'nama_pelanggan' => 'required',
-            'items' => 'required|array',
+            'rekening_id'    => 'required',
+            'items'          => 'required|array',
         ]);
 
         DB::beginTransaction();
@@ -85,28 +86,29 @@ class InvoiceController extends Controller
             // Generate Terbilang
             $teks_terbilang = trim($this->terbilang($grand_total)) . " Rupiah";
 
-            // 1. Simpan Header Invoice
+            // 2. Simpan Header Invoice
             $invoice = Invoice::create([
-                'no_invoice' => $request->no_invoice,
-                'tanggal' => $request->tanggal,
-                'nama_pelanggan' => $request->nama_pelanggan,
+                'no_invoice'       => $request->no_invoice,
+                'tanggal'          => $request->tanggal,
+                'nama_pelanggan'   => $request->nama_pelanggan,
                 'alamat_pelanggan' => $request->alamat_pelanggan,
-                'no_so' => $request->no_so,
-                'subtotal' => $subtotal,
-                'ppn' => $ppn,
-                'grand_total' => $grand_total,
-                'terbilang' => $teks_terbilang,
+                'no_so'            => $request->no_so,
+                'rekening_id'      => $request->rekening_id,
+                'subtotal'         => $subtotal,
+                'ppn'              => $ppn,
+                'grand_total'      => $grand_total,
+                'terbilang'        => $teks_terbilang,
             ]);
 
-            // 2. Simpan Detail Barang
+            // 3. Simpan Detail Barang
             foreach ($request->items as $item) {
                 InvoiceItem::create([
-                    'invoice_id' => $invoice->id,
+                    'invoice_id'  => $invoice->id,
                     'nama_barang' => $item['nama_barang'],
-                    'qty' => $item['qty'],
-                    'satuan' => $item['satuan'],
-                    'harga' => $item['harga'],
-                    'total' => ($item['qty'] * $item['harga']),
+                    'qty'         => $item['qty'],
+                    'satuan'      => $item['satuan'],
+                    'harga'       => $item['harga'],
+                    'total'       => ($item['qty'] * $item['harga']),
                 ]);
             }
 
@@ -119,18 +121,15 @@ class InvoiceController extends Controller
         }
     }
 
-    // Fungsi untuk menampilkan halaman Cetak / Print
     public function print($id)
     {
-        $invoice = Invoice::with('items')->findOrFail($id);
+        $invoice = Invoice::with(['items', 'rekening'])->findOrFail($id);
         return view('invoice.print', compact('invoice'));
     }
 
-    // Fungsi untuk menandai lunas dan kirim ke Uang Masuk
-    // Fungsi untuk menandai lunas & kirim otomatis ke Uang Masuk (Bisa Swasta / Pemerintah)
     public function tandaiLunas($id, $kategori)
     {
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::with('rekening')->findOrFail($id);
 
         if ($invoice->status_pembayaran == 'Lunas') {
             return back()->with('error', 'Invoice ini sudah lunas!');
@@ -143,17 +142,21 @@ class InvoiceController extends Controller
                 'status_pembayaran' => 'Lunas'
             ]);
 
-            // 2. Logika Penghitungan Berdasarkan Kategori
+            // 2. Jika pilih "Hanya Lunas", lewati pembuatan data Uang Masuk
+            if ($kategori == 'hanya_status') {
+                DB::commit();
+                return back()->with('success', 'Status Invoice berhasil diubah jadi LUNAS (Keuangan tidak diubah karena sudah tercatat sebelumnya).');
+            }
+
+            // 3. Logika Penghitungan
             if ($kategori == 'pemerintah') {
-                // Jika Pemerintah, hitung mundur PPN dan PPh 22 dari Grand Total
                 $includePpn = $invoice->grand_total;
                 $excludePpn = $includePpn / 1.11;
                 $ppn = $includePpn - $excludePpn;
-                $pph22 = $excludePpn * 0.015; // Potongan PPh 22 (1.5%)
+                $pph22 = $excludePpn * 0.015;
                 $totalDiterima = $excludePpn - $pph22;
-                $totalRekeningKoran = $totalDiterima; // Asumsi bersih masuk bank
+                $totalRekeningKoran = $totalDiterima;
             } else {
-                // Jika Swasta, tidak ada PPh 22
                 $includePpn = $invoice->grand_total;
                 $excludePpn = $invoice->subtotal;
                 $ppn = $invoice->ppn;
@@ -162,14 +165,17 @@ class InvoiceController extends Controller
                 $totalRekeningKoran = $invoice->grand_total;
             }
 
-            // 3. Insert otomatis ke tabel Uang Masuk
+            // Ambil Atas Nama rekening dari relasi (fallback ke 'DARMA' jika tidak ada)
+            $namaRekening = $invoice->rekening ? $invoice->rekening->atas_nama : 'DARMA';
+
+            // 4. Insert otomatis ke tabel Uang Masuk
             UangMasuk::create([
                 'tanggal_transfer'     => date('Y-m-d'),
-                'kategori'             => $kategori, // 'pemerintah' atau 'swasta'
+                'kategori'             => $kategori,
                 'instansi'             => strtoupper($invoice->nama_pelanggan),
                 'nama_pengadaan'       => 'Pelunasan ' . $invoice->no_invoice,
                 'keterangan'           => $invoice->no_so ?? '-',
-                'rekening_tujuan'      => 'DARMA',
+                'rekening_tujuan'      => strtoupper($namaRekening),
                 'status_transfer'      => 'SUDAH',
                 'jumlah_include_ppn'   => $includePpn,
                 'jumlah_exclude_ppn'   => $excludePpn,
@@ -189,21 +195,19 @@ class InvoiceController extends Controller
         }
     }
 
-    // --- FORM EDIT INVOICE ---
     public function edit($id)
     {
         $invoice = Invoice::with('items')->findOrFail($id);
-        
-        // Gembok Keamanan: Cek apakah sudah lunas
         if ($invoice->status_pembayaran == 'Lunas') {
             return redirect()->route('invoice.index')->with('error', 'Akses ditolak! Invoice yang sudah lunas tidak dapat diedit.');
         }
 
         $barangs = \App\Models\Barang::orderBy('nama_barang', 'asc')->get();
-        return view('invoice.edit', compact('invoice', 'barangs'));
+        $rekenings = Rekening::orderBy('nama_bank', 'asc')->get(); 
+        
+        return view('invoice.edit', compact('invoice', 'barangs', 'rekenings'));
     }
 
-    // --- PROSES UPDATE INVOICE ---
     public function update(Request $request, $id)
     {
         $invoice = Invoice::findOrFail($id);
@@ -213,9 +217,10 @@ class InvoiceController extends Controller
         }
 
         $request->validate([
-            'tanggal' => 'required|date',
+            'tanggal'        => 'required|date',
             'nama_pelanggan' => 'required',
-            'items' => 'required|array',
+            'rekening_id'    => 'required',
+            'items'          => 'required|array',
         ]);
 
         DB::beginTransaction();
@@ -231,14 +236,15 @@ class InvoiceController extends Controller
 
             // 1. Update Header
             $invoice->update([
-                'tanggal' => $request->tanggal,
-                'nama_pelanggan' => $request->nama_pelanggan,
+                'tanggal'          => $request->tanggal,
+                'nama_pelanggan'   => $request->nama_pelanggan,
                 'alamat_pelanggan' => $request->alamat_pelanggan,
-                'no_so' => $request->no_so,
-                'subtotal' => $subtotal,
-                'ppn' => $ppn,
-                'grand_total' => $grand_total,
-                'terbilang' => $teks_terbilang,
+                'no_so'            => $request->no_so,
+                'rekening_id'      => $request->rekening_id,
+                'subtotal'         => $subtotal,
+                'ppn'              => $ppn,
+                'grand_total'      => $grand_total,
+                'terbilang'        => $teks_terbilang,
             ]);
 
             // 2. Hapus detail barang yang lama
@@ -247,12 +253,12 @@ class InvoiceController extends Controller
             // 3. Masukkan detail barang yang baru
             foreach ($request->items as $item) {
                 InvoiceItem::create([
-                    'invoice_id' => $invoice->id,
+                    'invoice_id'  => $invoice->id,
                     'nama_barang' => $item['nama_barang'],
-                    'qty' => $item['qty'],
-                    'satuan' => $item['satuan'],
-                    'harga' => $item['harga'],
-                    'total' => ($item['qty'] * $item['harga']),
+                    'qty'         => $item['qty'],
+                    'satuan'      => $item['satuan'],
+                    'harga'       => $item['harga'],
+                    'total'       => ($item['qty'] * $item['harga']),
                 ]);
             }
 
@@ -264,7 +270,6 @@ class InvoiceController extends Controller
         }
     }
 
-    // --- PROSES HAPUS INVOICE ---
     public function destroy($id)
     {
         $invoice = Invoice::findOrFail($id);
@@ -273,7 +278,7 @@ class InvoiceController extends Controller
             return redirect()->route('invoice.index')->with('error', 'Gagal! Invoice yang sudah lunas tidak boleh dihapus.');
         }
 
-        $invoice->delete(); // Detail barang otomatis terhapus karena pakai cascadeOnDelete di migration
+        $invoice->delete();
 
         return redirect()->route('invoice.index')->with('success', 'Invoice berhasil dihapus permanen!');
     }
