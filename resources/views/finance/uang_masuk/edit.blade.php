@@ -4,6 +4,33 @@
 <style>
 .form-page{max-width:680px;margin:0 auto}
 
+.form-page{
+    --fp-text:#0f172a; --fp-text-muted:#64748b;
+    --fp-surface:#ffffff; --fp-border:#e2e8f0; --fp-border-soft:#eef1f5;
+    --fp-section-title:#334155;
+    --fp-option-bg:#f8fafc; --fp-option-border:#e2e8f0;
+    --fp-option-hover-border:#93c5fd; --fp-option-hover-bg:#eff6ff;
+    --fp-option-text:#475569;
+    --fp-option-checked-border:#2563eb; --fp-option-checked-bg:#eff6ff; --fp-option-checked-text:#1d4ed8;
+    --fp-info-bg:#f8fafc; --fp-info-border:#e2e8f0;
+    --fp-tax-bg:#fffbeb; --fp-tax-border:#fde68a;
+    --fp-hint:#94a3b8; --fp-tax-hint:#92400e;
+    --fp-actions-bg:#f8fafc;
+}
+[data-theme="dark"] .form-page{
+    --fp-text:#f8fafc; --fp-text-muted:#94a3b8;
+    --fp-surface:#1e293b; --fp-border:#334155; --fp-border-soft:#263449;
+    --fp-section-title:#cbd5e1;
+    --fp-option-bg:#0f172a; --fp-option-border:#334155;
+    --fp-option-hover-border:#3b82f6; --fp-option-hover-bg:rgba(37,99,235,.15);
+    --fp-option-text:#cbd5e1;
+    --fp-option-checked-border:#3b82f6; --fp-option-checked-bg:rgba(37,99,235,.18); --fp-option-checked-text:#93c5fd;
+    --fp-info-bg:#0f172a; --fp-info-border:#334155;
+    --fp-tax-bg:rgba(217,119,6,.14); --fp-tax-border:rgba(217,119,6,.4);
+    --fp-hint:#64748b; --fp-tax-hint:#fcd34d;
+    --fp-actions-bg:#0f172a;
+}
+
 .form-page-header{margin-bottom:1.5rem}
 .form-page-header .eyebrow{
     display:flex;align-items:center;gap:.5rem;
@@ -11,17 +38,17 @@
     color:#2563eb;margin-bottom:.4rem;
 }
 .form-page-header .eyebrow svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
-.form-page-header h3{margin:0;font-size:1.3rem;color:#0f172a;font-weight:700}
-.form-page-header p{margin:.3rem 0 0;font-size:.85rem;color:#64748b}
+.form-page-header h3{margin:0;font-size:1.3rem;color:var(--fp-text);font-weight:700}
+.form-page-header p{margin:.3rem 0 0;font-size:.85rem;color:var(--fp-text-muted)}
 
-.form-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);
-border:1px solid #e2e8f0;overflow:hidden}
+.form-card{background:var(--fp-surface);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);
+border:1px solid var(--fp-border);overflow:hidden;transition:background-color .3s ease,border-color .3s ease}
 
-.form-section{padding:1.5rem;border-bottom:1px solid #eef1f5}
+.form-section{padding:1.5rem;border-bottom:1px solid var(--fp-border-soft)}
 .form-section:last-of-type{border-bottom:none}
 .form-section-title{
     display:flex;align-items:center;gap:.5rem;
-    font-size:.78rem;font-weight:700;color:#334155;text-transform:uppercase;
+    font-size:.78rem;font-weight:700;color:var(--fp-section-title);text-transform:uppercase;
     letter-spacing:.05em;margin-bottom:1rem;
 }
 .form-section-title svg{width:16px;height:16px;stroke:#2563eb;fill:none;stroke-width:2}
@@ -33,46 +60,46 @@ border:1px solid #e2e8f0;overflow:hidden}
 .category-picker{display:flex;gap:.75rem}
 .category-option{
     flex:1;position:relative;cursor:pointer;
-    border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;
+    border:1.5px solid var(--fp-option-border);border-radius:10px;padding:.85rem 1rem;
     display:flex;align-items:center;gap:.65rem;
-    background:#f8fafc;transition:.15s ease;
+    background:var(--fp-option-bg);transition:.15s ease;
 }
-.category-option:hover{border-color:#93c5fd;background:#eff6ff}
+.category-option:hover{border-color:var(--fp-option-hover-border);background:var(--fp-option-hover-bg)}
 .category-option input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
 .category-option svg{width:20px;height:20px;stroke:#64748b;fill:none;stroke-width:1.8;flex-shrink:0;transition:.15s ease}
-.category-option span{font-size:.875rem;font-weight:600;color:#475569}
+.category-option span{font-size:.875rem;font-weight:600;color:var(--fp-option-text)}
 .category-option:has(input:checked){
-    border-color:#2563eb;background:#eff6ff;
+    border-color:var(--fp-option-checked-border);background:var(--fp-option-checked-bg);
     box-shadow:0 0 0 3px rgba(37,99,235,.1);
 }
 .category-option:has(input:checked) svg{stroke:#2563eb}
-.category-option:has(input:checked) span{color:#1d4ed8}
+.category-option:has(input:checked) span{color:var(--fp-option-checked-text)}
 
 /* Blok pajak & admin bank */
 .info-block{
-    background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;
-    padding:1.1rem 1.25rem;
+    background:var(--fp-info-bg);border:1px solid var(--fp-info-border);border-radius:10px;
+    padding:1.1rem 1.25rem;transition:background-color .3s ease,border-color .3s ease;
 }
-.info-block.tax{background:#fffbeb;border-color:#fde68a}
+.info-block.tax{background:var(--fp-tax-bg);border-color:var(--fp-tax-border)}
 .info-block-label{
     display:flex;align-items:center;gap:.5rem;
-    font-size:.8rem;font-weight:700;color:#334155;margin-bottom:.75rem;
+    font-size:.8rem;font-weight:700;color:var(--fp-section-title);margin-bottom:.75rem;
 }
 .info-block-label svg{width:16px;height:16px;stroke:#d97706;fill:none;stroke-width:2}
 .check-option{
     display:flex;align-items:center;gap:.5rem;cursor:pointer;
-    font-size:.85rem;color:#475569;font-weight:500;
+    font-size:.85rem;color:var(--fp-option-text);font-weight:500;
 }
 .check-option input{width:16px;height:16px;accent-color:#2563eb;cursor:pointer}
 .check-row{display:flex;gap:1.5rem;flex-wrap:wrap}
 
-.hint-text{color:#94a3b8;font-size:.75rem;margin-top:.4rem;display:block}
+.hint-text{color:var(--fp-hint);font-size:.75rem;margin-top:.4rem;display:block}
 
-.nominal-input{padding:.65rem .85rem !important;font-size:1rem !important;font-weight:600;color:#0f172a}
+.nominal-input{padding:.65rem .85rem !important;font-size:1rem !important;font-weight:600;color:var(--fp-text)}
 
 .form-actions{
-    padding:1.25rem 1.5rem;background:#f8fafc;
-    display:flex;gap:.75rem;align-items:center;
+    padding:1.25rem 1.5rem;background:var(--fp-actions-bg);
+    display:flex;gap:.75rem;align-items:center;transition:background-color .3s ease;
 }
 .btn-icon{display:inline-flex;align-items:center;gap:.5rem}
 .btn-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}

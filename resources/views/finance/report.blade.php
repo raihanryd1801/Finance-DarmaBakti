@@ -3,30 +3,30 @@
 @section('content')
 <style>
     .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
-    .page-header h2{margin:0;font-size:1.4rem;color:#1e293b;font-weight:600}
+    .page-header h2{margin:0;font-size:1.4rem;color:var(--text-primary);font-weight:600}
 
-    .filter-card{background:#f8fafc;border:1px solid var(--border-color,#e2e8f0);box-shadow:none;
+    .filter-card{background:var(--table-header);border:1px solid var(--border-color,#e2e8f0);box-shadow:none;
         padding:1rem 1.5rem;margin-bottom:1.5rem}
     .filter-card form{display:flex;flex-wrap:wrap;gap:15px;align-items:flex-end}
-    .filter-card label{font-size:.8rem;font-weight:600;color:#475569;margin-bottom:5px;text-transform:uppercase;letter-spacing:.02em}
+    .filter-card label{font-size:.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.02em}
     .filter-actions{display:flex;gap:10px}
 
     .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
     .summary-card{margin:0;border-left:4px solid var(--accent,#2563eb)}
-    .summary-card .label{font-size:.8rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
-    .summary-card .value{font-size:1.35rem;font-weight:700;color:#1e293b;margin-top:.4rem}
+    .summary-card .label{font-size:.8rem;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+    .summary-card .value{font-size:1.35rem;font-weight:700;color:var(--text-primary);margin-top:.4rem}
 
-    .section-title{margin:0 0 1rem;color:#334155;font-size:1.05rem;font-weight:600}
-    .empty-state{text-align:center;color:#6b7280;padding:2.5rem}
+    .section-title{margin:0 0 1rem;color:var(--text-primary);font-size:1.05rem;font-weight:600}
+    .empty-state{text-align:center;color:var(--text-secondary);padding:2.5rem}
 
     /* ===== GRAFIK ===== */
     .chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:2rem}
     .chart-card{padding:1.25rem 1.5rem}
     .chart-card .section-title{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
-    .chart-card .section-title small{font-size:.72rem;font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0}
+    .chart-card .section-title small{font-size:.72rem;font-weight:500;color:var(--text-secondary);text-transform:none;letter-spacing:0}
     .chart-canvas-wrap{position:relative;height:280px}
     .chart-legend-custom{display:flex;flex-wrap:wrap;gap:.6rem 1.1rem;margin-top:1rem;justify-content:center}
-    .chart-legend-custom span{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;color:#475569}
+    .chart-legend-custom span{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--text-secondary)}
     .chart-legend-custom i{width:9px;height:9px;border-radius:2px;display:inline-block}
 
     @media (max-width: 900px){
@@ -164,6 +164,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const rupiah = (val) => 'Rp ' + Number(val).toLocaleString('id-ID');
 
+    // Deteksi tema aktif supaya teks & garis grid grafik tetap kebaca
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const chartTextColor = isDark ? '#cbd5e1' : '#475569';
+    const chartTickColor = isDark ? '#94a3b8' : '#64748b';
+    const chartGridColor = isDark ? '#334155' : '#f1f5f9';
+
     // ===== BAR CHART: Kotor vs Bersih per Instansi =====
     new Chart(document.getElementById('chartPerInstansi'), {
         type: 'bar',
@@ -192,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
             plugins: {
                 legend: {
                     position: 'top',
-                    labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 }, color: '#475569' }
+                    labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 }, color: chartTextColor }
                 },
                 tooltip: {
                     callbacks: {
@@ -201,11 +207,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             scales: {
-                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+                x: { grid: { display: false }, ticks: { color: chartTickColor, font: { size: 11 } } },
                 y: {
-                    grid: { color: '#f1f5f9' },
+                    grid: { color: chartGridColor },
                     ticks: {
-                        color: '#64748b',
+                        color: chartTickColor,
                         font: { size: 11 },
                         callback: (val) => 'Rp ' + (val / 1000000).toLocaleString('id-ID') + 'jt'
                     }

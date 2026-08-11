@@ -12,13 +12,38 @@
         --text-muted: #64748b;
         --success: #16a34a;
         --success-bg: #dcfce7;
+        --success-text: #14532d;
+        --success-border: #bbf7d0;
         --danger: #dc2626;
         --danger-bg: #fee2e2;
+        --danger-text: #991b1b;
         --warning: #d97706;
         --warning-bg: #fef3c7;
         --info: #0284c7;
         --info-bg: #e0f2fe;
         --radius: 12px;
+        --table-header-bg: #f8fafc;
+        --table-hover-bg: #fafbff;
+        --divider: #f1f5f9;
+    }
+
+    [data-theme="dark"] .invoice-wrap {
+        --primary-light: rgba(79, 70, 229, 0.18);
+        --surface: #1e293b;
+        --border: #334155;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --success-bg: rgba(22, 163, 74, 0.18);
+        --success-text: #86efac;
+        --success-border: rgba(22, 163, 74, 0.35);
+        --danger-bg: rgba(220, 38, 38, 0.18);
+        --danger-text: #fca5a5;
+        --warning-bg: rgba(217, 119, 6, 0.18);
+        --info: #38bdf8;
+        --info-bg: rgba(2, 132, 199, 0.18);
+        --table-header-bg: #0f172a;
+        --table-hover-bg: #263449;
+        --divider: #334155;
     }
 
     .invoice-wrap {
@@ -33,6 +58,7 @@
         padding: 24px;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         margin-bottom: 20px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .invoice-header {
@@ -79,19 +105,21 @@
 
     .alert-success {
         background: var(--success-bg);
-        color: #14532d;
+        color: var(--success-text);
         padding: 12px 16px;
         border-radius: 8px;
         margin-bottom: 20px;
         font-size: 14px;
         font-weight: 500;
-        border: 1px solid #bbf7d0;
+        border: 1px solid var(--success-border);
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
     .invoice-table-container {
         overflow-x: auto;
         border-radius: 10px;
         border: 1px solid var(--border);
+        transition: border-color 0.3s ease;
     }
 
     table.invoice-table {
@@ -101,7 +129,7 @@
     }
 
     .invoice-table thead tr {
-        background: #f8fafc;
+        background: var(--table-header-bg);
         text-align: left;
     }
 
@@ -113,12 +141,15 @@
         letter-spacing: 0.04em;
         color: var(--text-muted);
         border-bottom: 1px solid var(--border);
+        transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
     }
 
     .invoice-table td {
         padding: 14px 16px;
         border-bottom: 1px solid var(--border);
         vertical-align: middle;
+        color: var(--text);
+        transition: color 0.3s ease, border-color 0.3s ease;
     }
 
     .invoice-table tbody tr:last-child td {
@@ -130,7 +161,7 @@
     }
 
     .invoice-table tbody tr:hover {
-        background: #fafbff;
+        background: var(--table-hover-bg);
     }
 
     .no-invoice-badge {
@@ -163,12 +194,12 @@
 
     .status-lunas {
         background: var(--success-bg);
-        color: #14532d;
+        color: var(--success-text);
     }
 
     .status-belum {
         background: var(--danger-bg);
-        color: #991b1b;
+        color: var(--danger-text);
     }
 
     .action-group {
@@ -234,6 +265,7 @@
         border-radius: 8px;
         overflow: hidden;
         border: 1px solid var(--border);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .dropdown-menu.show {
@@ -250,7 +282,7 @@
         font-size: 13px;
         font-family: inherit;
         color: var(--text);
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--divider);
         transition: background 0.12s ease;
     }
 
@@ -259,7 +291,7 @@
     }
 
     .dropdown-item:hover {
-        background: #f8fafc;
+        background: var(--table-header-bg);
     }
 
     .dropdown-item.pemerintah {

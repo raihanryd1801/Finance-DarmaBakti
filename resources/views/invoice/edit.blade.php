@@ -7,7 +7,7 @@
         <form action="{{ route('invoice.update', $invoice->id) }}" method="POST">
             @csrf
             <!-- HEADER INVOICE -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 8px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; background: var(--table-header); padding: 20px; border-radius: 8px;">
             <div>
                     <label style="display: block; font-weight: bold; margin-bottom: 5px;">Pembayaran ke Rekening</label>
                     <select name="rekening_id" class="form-control" required style="width: 100%; padding: 8px;">
@@ -21,7 +21,7 @@
                 </div>    
             <div>
                     <label style="display: block; font-weight: bold; margin-bottom: 5px;">No Invoice</label>
-                    <input type="text" value="{{ $invoice->no_invoice }}" class="form-control" readonly style="width: 100%; padding: 8px; background: #e2e8f0;">
+                    <input type="text" value="{{ $invoice->no_invoice }}" class="form-control" readonly style="width: 100%; padding: 8px; background: var(--border-color);">
                 </div>
                 <div>
                     <label style="display: block; font-weight: bold; margin-bottom: 5px;">Tanggal</label>
@@ -45,7 +45,7 @@
             <h4 style="margin-bottom: 15px;">Daftar Barang</h4>
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;" id="itemTable">
                 <thead>
-                    <tr style="background: #e2e8f0;">
+                    <tr style="background: var(--border-color);">
                         <th style="padding: 10px; text-align: left;">Pilih Barang</th>
                         <th style="padding: 10px; width: 100px;">Qty</th>
                         <th style="padding: 10px; width: 150px;">Satuan</th>
@@ -67,7 +67,7 @@
                             </select>
                         </td>
                         <td style="padding: 8px;"><input type="number" name="items[{{ $idx }}][qty]" value="{{ $item->qty }}" min="1" required style="width: 100%; padding: 8px;"></td>
-                        <td style="padding: 8px;"><input type="text" name="items[{{ $idx }}][satuan]" id="satuan_{{ $idx }}" value="{{ $item->satuan }}" readonly style="width: 100%; padding: 8px; background: #f1f5f9;"></td>
+                        <td style="padding: 8px;"><input type="text" name="items[{{ $idx }}][satuan]" id="satuan_{{ $idx }}" value="{{ $item->satuan }}" readonly style="width: 100%; padding: 8px; background: var(--table-hover);"></td>
                         <td style="padding: 8px;"><input type="number" name="items[{{ $idx }}][harga]" id="harga_{{ $idx }}" value="{{ round($item->harga) }}" required style="width: 100%; padding: 8px;"></td>
                         <td style="padding: 8px; text-align: center;">
                             @if($idx > 0)
@@ -84,7 +84,7 @@
             <button type="button" onclick="tambahBaris()" class="btn" style="background: #10b981; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">+ Tambah Barang</button>
 
             <!-- OPSI PPN -->
-            <div style="margin-bottom: 30px; padding: 15px; border: 1px solid #cbd5e1; border-radius: 6px; display: inline-block;">
+            <div style="margin-bottom: 30px; padding: 15px; border: 1px solid var(--border-color); border-radius: 6px; display: inline-block;">
                 <label style="font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                     <input type="checkbox" name="pakai_ppn" value="1" {{ $invoice->ppn > 0 ? 'checked' : '' }} style="width: 18px; height: 18px;"> 
                     Tambahkan PPN 11%
@@ -132,7 +132,7 @@
                         </select>
                     </td>
                     <td style="padding: 8px;"><input type="number" name="items[${rowIdx}][qty]" value="1" min="1" required style="width: 100%; padding: 8px;"></td>
-                    <td style="padding: 8px;"><input type="text" name="items[${rowIdx}][satuan]" id="satuan_${rowIdx}" readonly style="width: 100%; padding: 8px; background: #f1f5f9;"></td>
+                    <td style="padding: 8px;"><input type="text" name="items[${rowIdx}][satuan]" id="satuan_${rowIdx}" readonly style="width: 100%; padding: 8px; background: var(--table-hover);"></td>
                     <td style="padding: 8px;"><input type="number" name="items[${rowIdx}][harga]" id="harga_${rowIdx}" required style="width: 100%; padding: 8px;"></td>
                     <td style="padding: 8px; text-align: center;"><button type="button" onclick="hapusBaris(${rowIdx})" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button></td>
                 </tr>
