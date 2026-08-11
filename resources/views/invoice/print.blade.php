@@ -4,103 +4,144 @@
     <meta charset="UTF-8">
     <title>Cetak Invoice - {{ $invoice->no_invoice }}</title>
     <style>
+        /* Pengaturan Kertas A4 & Reset */
+        @page {
+            size: A4;
+            margin: 10mm 15mm;
+        }
         body {
-            font-family: Arial, sans-serif;
-            font-size: 13px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
             color: #000;
+            background: #fff;
+            margin: 0;
+            padding: 0;
         }
-        .container {
+        .page-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 190mm;
             margin: 0 auto;
-            padding: 20px;
+            background: #fff;
         }
-        .kop-surat {
-            text-align: center;
-            border-bottom: 3px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .kop-surat h1 {
-            margin: 0 0 5px;
-            font-size: 24px;
-            color: #000080; /* Warna biru gelap ala logo */
-        }
-        .kop-surat p {
-            margin: 2px 0;
-            font-size: 13px;
-        }
-        .invoice-title {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-decoration: underline;
-        }
-        .header-info {
+        
+        /* Kop Surat */
+        .kop-table {
             width: 100%;
-            margin-bottom: 20px;
+            border-bottom: 3px solid #000;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
             border-collapse: collapse;
         }
-        .header-info td {
-            vertical-align: top;
-            padding: 3px;
+        .kop-table td {
+            vertical-align: middle;
         }
+        
+        /* Kotak Judul Invoice */
+        .invoice-title-box {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            border: 2px solid #000;
+            padding: 6px;
+            margin-bottom: 12px;
+            background: #f2f2f2;
+            letter-spacing: 1px;
+        }
+
+        /* Tabel Informasi Header (Kepada & Tanggal) */
+        .info-table {
+            width: 100%;
+            margin-bottom: 12px;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 2px 4px;
+            vertical-align: top;
+            font-size: 10.5pt;
+        }
+
+        /* Tabel Rincian Barang */
         .table-items {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .table-items th, .table-items td {
             border: 1px solid #000;
-            padding: 8px;
+            padding: 5px 6px;
+            font-size: 10.5pt;
         }
         .table-items th {
-            background-color: #f0f0f0;
+            background-color: #e6e6e6;
             text-align: center;
+            text-transform: uppercase;
         }
+        
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .footer-info { margin-top: 30px; }
-        
+        .text-left { text-align: left; }
+
+        /* Tabel Bagian Bawah (Terbilang, Rekening & Tanda Tangan) */
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        .footer-table td {
+            vertical-align: top;
+            font-size: 10.5pt;
+            padding: 2px;
+        }
+
+        /* Tombol Cetak (Hilang saat diprint) */
         @media print {
-            body { margin: 0; padding: 0; }
             .no-print { display: none; }
         }
     </style>
 </head>
 <body onload="window.print()">
-    <div class="container">
-        <!-- Tombol Print (Sembunyi saat dicetak) -->
-        <div class="no-print" style="margin-bottom: 20px; text-align: right;">
-            <button onclick="window.print()" style="padding: 10px 20px; background: #2563eb; color: #fff; border: none; cursor: pointer; border-radius: 4px;">🖨️ Cetak Sekarang</button>
+    <div class="page-container">
+        
+        <!-- Tombol Cetak -->
+        <div class="no-print" style="margin-bottom: 15px; text-align: right;">
+            <button onclick="window.print()" style="padding: 10px 20px; background: #2563eb; color: #fff; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 11pt;">🖨️ Cetak / Simpan PDF</button>
         </div>
 
-        <!-- KOP SURAT -->
-        <div class="kop-surat">
-            <h1>CV DARMA BAKTI MANDIRI</h1>
-            <p>Mengerjakan Macam-Macam Seragam</p>
-            <p>Bordir, Lencana, Vandel, Plakat, Topi, Sablon Percetakan, dll</p>
-            <p>Jl. Bentengan X No.11 RT/RW 011/001, Sunter Jaya - Jakarta Utara</p>
-            <p>Email : darmabaktimandiri@ymail.com</p>
-        </div>
-
-        <div class="invoice-title">INVOICE PENJUALAN</div>
-
-        <!-- INFO PELANGGAN & INVOICE -->
-        <table class="header-info">
+        <!-- KOP SURAT (LOGO & TEKS) -->
+        <table class="kop-table">
             <tr>
-                <td width="15%">Kepada Yth.</td>
-                <td width="2%">:</td>
-                <td width="43%"><strong>{{ $invoice->nama_pelanggan }}</strong></td>
-                <td width="15%">Tanggal</td>
-                <td width="2%">:</td>
-                <td width="23%">{{ date('d F Y', strtotime($invoice->tanggal)) }}</td>
+                <td style="width: 15%; text-align: left;">
+                    <img src="{{ asset('darma.webp') }}" alt="Logo" style="width: 70px; height: auto; display: block;">
+                </td>
+                <td style="width: 85%; text-align: center;">
+                    <h2 style="margin: 0 0 3px; font-size: 16pt; color: #000080; font-weight: bold; text-transform: uppercase;">CV DARMA BAKTI MANDIRI</h2>
+                    <div style="font-size: 10pt; font-weight: bold; margin-bottom: 2px;">Mengerjakan Macam-Macam Seragam</div>
+                    <div style="font-size: 9pt; margin-bottom: 2px;">Bordir, Lencana, Vandel, Plakat, Topi, Sablon Percetakan, dll</div>
+                    <div style="font-size: 9pt; margin-bottom: 2px;">Jl. Bentengan X No.11 RT/RW 011/001, Sunter Jaya - Jakarta Utara</div>
+                    <div style="font-size: 9pt;">Email : darmabaktimandiri@ymail.com</div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- JUDUL INVOICE -->
+        <div class="invoice-title-box">
+            INVOICE PENJUALAN
+        </div>
+
+        <!-- INFORMASI PELANGGAN & SO/PO -->
+        <table class="info-table">
+            <tr>
+                <td style="width: 12%;">Kepada Yth.</td>
+                <td style="width: 2%;">:</td>
+                <td style="width: 46%;"><strong>{{ $invoice->nama_pelanggan }}</strong><br>{{ $invoice->alamat_pelanggan }}</td>
+                <td style="width: 15%;">Tanggal</td>
+                <td style="width: 2%;">:</td>
+                <td style="width: 23%;">{{ date('d F Y', strtotime($invoice->tanggal)) }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
-                <td>{{ $invoice->alamat_pelanggan }}</td>
+                <td></td>
                 <td>No. Invoice</td>
                 <td>:</td>
                 <td><strong>{{ $invoice->no_invoice }}</strong></td>
@@ -115,15 +156,15 @@
             </tr>
         </table>
 
-        <!-- TABEL BARANG -->
+        <!-- TABEL RINCIAN BARANG -->
         <table class="table-items">
             <thead>
                 <tr>
-                    <th width="5%">NO.</th>
-                    <th width="40%">NAMA BARANG</th>
-                    <th width="10%">QTY</th>
-                    <th width="15%">HARGA @</th>
-                    <th width="30%">TOTAL</th>
+                    <th style="width: 6%;">NO.</th>
+                    <th style="width: 44%;">NAMA BARANG</th>
+                    <th style="width: 12%;">QTY</th>
+                    <th style="width: 18%;">HARGA @</th>
+                    <th style="width: 20%;">TOTAL</th>
                 </tr>
             </thead>
             <tbody>
@@ -137,45 +178,65 @@
                 </tr>
                 @endforeach
                 
+                <!-- BARIS KOSONG PENYEIMBANG (Biar tabel tetap proporsional jika item sedikit) -->
+                @if(count($invoice->items) < 3)
+                    @for($i = count($invoice->items); $i < 3; $i++)
+                    <tr>
+                        <td class="text-center" style="color: transparent;">-</td>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    @endfor
+                @endif
+
                 <!-- SUBTOTAL, PPN, GRAND TOTAL -->
                 @if($invoice->ppn > 0)
                 <tr>
-                    <td colspan="4" class="text-right" style="border:none; padding-top:15px;"><strong>Subtotal :</strong></td>
-                    <td class="text-right" style="border:none; padding-top:15px;">{{ number_format($invoice->subtotal, 0, ',', '.') }}</td>
+                    <td colspan="4" class="text-right" style="border-right: none;"><strong>Subtotal :</strong></td>
+                    <td class="text-right"><strong>{{ number_format($invoice->subtotal, 0, ',', '.') }}</strong></td>
                 </tr>
                 <tr>
-                    <td colspan="4" class="text-right" style="border:none;"><strong>PPN 11% :</strong></td>
-                    <td class="text-right" style="border:none;">{{ number_format($invoice->ppn, 0, ',', '.') }}</td>
+                    <td colspan="4" class="text-right" style="border-right: none;"><strong>PPN 11% :</strong></td>
+                    <td class="text-right"><strong>{{ number_format($invoice->ppn, 0, ',', '.') }}</strong></td>
                 </tr>
                 @endif
                 <tr>
-                    <td colspan="4" class="text-right" style="border:none; padding-top:10px;"><strong>GRAND TOTAL :</strong></td>
-                    <td class="text-right" style="border-bottom: 3px double #000; padding-top:10px;"><strong>Rp {{ number_format($invoice->grand_total, 0, ',', '.') }}</strong></td>
+                    <td colspan="4" class="text-right" style="border-right: none; background: #f2f2f2;"><strong>GRAND TOTAL :</strong></td>
+                    <td class="text-right" style="background: #f2f2f2;"><strong>Rp {{ number_format($invoice->grand_total, 0, ',', '.') }}</strong></td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- TERBILANG & REKENING -->
-        <div style="margin-top: 10px;">
-            <p><strong>Terbilang :</strong> <br> 
-               <em style="background: #f0f0f0; padding: 5px 10px; display: inline-block; min-width: 60%;"># {{ $invoice->terbilang }} #</em>
-            </p>
-            <p style="margin-top: 20px;">
-                <strong>Pembayaran dapat ditransfer ke Rekening:</strong><br>
-                BNI 0430643011 an. DANURI
-            </p>
-        </div>
-
-        <!-- TANDA TANGAN -->
-        <table style="width: 100%; margin-top: 50px;">
+        <!-- BAGIAN BAWAH: TERBILANG, REKENING & TANDA TANGAN -->
+        <table class="footer-table">
             <tr>
-                <td width="70%"></td>
-                <td width="30%" class="text-center">
-                    Hormat Kami,<br><br><br><br><br>
-                    <strong>( ...................................... )</strong>
+                <td style="width: 60%;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>Terbilang :</strong><br>
+                        <div style="background: #f9f9f9; padding: 5px 8px; border: 1px dashed #444; margin-top: 3px; font-style: italic; display: inline-block;">
+                            # {{ $invoice->terbilang }} #
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 10pt; line-height: 1.4;">
+                        <strong>Bank Transfer / Cek:</strong><br>
+                        <strong>BNI 0430643011 an. DANURI</strong><br><br>
+                        <span style="font-size: 9pt; font-weight: bold;">TIDAK MENERIMA PEMBAYARAN MELALUI BG<br>HANYA MENERIMA TRANSFER</span>
+                    </div>
+                </td>
+                <td style="width: 40%; text-align: center;">
+                    <div style="margin-top: 5px;">
+                        Hormat Kami,<br>
+                        <strong>CV DARMA BAKTI MANDIRI</strong>
+                        <br><br><br><br>
+                        <strong>( DANURI )</strong>
+                    </div>
                 </td>
             </tr>
         </table>
+
     </div>
 </body>
 </html>

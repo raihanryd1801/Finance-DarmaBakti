@@ -155,6 +155,7 @@ border:1px solid #e2e8f0;overflow:hidden}
                             <option value="">-- Pilih Rekening --</option>
                             <option value="DARMA" {{ $data->rekening_tujuan == 'DARMA' ? 'selected' : '' }}>DARMA</option>
                             <option value="LINTANG" {{ $data->rekening_tujuan == 'LINTANG' ? 'selected' : '' }}>LINTANG</option>
+                            <option value="DANURI" {{ $data->rekening_tujuan == 'DANURI' ? 'selected' : '' }}>DANURI</option>
                         </select>
                     </div>
 

@@ -154,6 +154,7 @@ border:1px solid #e2e8f0;overflow:hidden}
                             <option value="">-- Pilih Rekening --</option>
                             <option value="DARMA">DARMA</option>
                             <option value="LINTANG">LINTANG</option>
+                            <option value="DANURI">DANURI</option>
                         </select>
                     </div>
 

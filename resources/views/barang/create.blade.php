@@ -1,42 +1,199 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="card" style="padding: 20px; max-width: 600px; margin: 0 auto;">
-        <h3 style="margin-bottom: 20px;">➕ Tambah Data Barang</h3>
+<style>
+    :root {
+        --primary: #4f46e5;
+        --primary-dark: #4338ca;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --danger: #dc2626;
+        --radius: 12px;
+    }
+
+    .form-wrap {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .form-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0 0 4px;
+        letter-spacing: -0.01em;
+    }
+
+    .form-subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin: 0 0 24px;
+    }
+
+    .field-group {
+        margin-bottom: 18px;
+    }
+
+    .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .field-label {
+        display: block;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+
+    .field-input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text);
+        background: #fff;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+    .field-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    textarea.field-input {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .field-error {
+        display: block;
+        color: var(--danger);
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+    }
+
+    .btn-submit {
+        padding: 11px 22px;
+        border-radius: 8px;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-cancel {
+        padding: 11px 22px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        border: 1px solid var(--border);
+        transition: background 0.15s ease;
+    }
+
+    .btn-cancel:hover {
+        background: #e2e8f0;
+        color: var(--text);
+    }
+
+    @media (max-width: 560px) {
+        .form-card {
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .field-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .btn-submit, .btn-cancel {
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<div class="form-wrap">
+    <div class="form-card">
+        <h3 class="form-title">Tambah Data Barang</h3>
+        <p class="form-subtitle">Lengkapi informasi barang baru di bawah ini</p>
 
         <form action="{{ route('barang.store') }}" method="POST">
             @csrf
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Kode Barang</label>
-                <input type="text" name="kode_barang" class="form-control" required placeholder="Contoh: 01-001" style="width: 100%; padding: 8px;">
-                @error('kode_barang') <span style="color: red; font-size: 12px;">{{ $message }}</span> @enderror
+            <div class="field-group">
+                <label class="field-label">Kode Barang</label>
+                <input type="text" name="kode_barang" class="field-input" required placeholder="Contoh: 01-001">
+                @error('kode_barang') <span class="field-error">{{ $message }}</span> @enderror
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nama Barang</label>
-                <input type="text" name="nama_barang" class="form-control" required placeholder="Contoh: Buku Tulis" style="width: 100%; padding: 8px;">
+            <div class="field-group">
+                <label class="field-label">Nama Barang</label>
+                <input type="text" name="nama_barang" class="field-input" required placeholder="Contoh: Buku Tulis">
+                @error('nama_barang') <span class="field-error">{{ $message }}</span> @enderror
             </div>
 
-            <div style="margin-bottom: 15px; display: flex; gap: 15px;">
-                <div style="flex: 1;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Satuan</label>
-                    <input type="text" name="satuan" class="form-control" required placeholder="Contoh: Pcs, Rim, Stel" style="width: 100%; padding: 8px;">
+            <div class="field-row">
+                <div class="field-group">
+                    <label class="field-label">Satuan</label>
+                    <input type="text" name="satuan" class="field-input" required placeholder="Contoh: Pcs, Rim, Stel">
+                    @error('satuan') <span class="field-error">{{ $message }}</span> @enderror
                 </div>
-                <div style="flex: 1;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Harga Satuan (Rp)</label>
-                    <input type="number" name="harga" class="form-control" required placeholder="Contoh: 10000" style="width: 100%; padding: 8px;">
+                <div class="field-group">
+                    <label class="field-label">Harga Satuan (Rp)</label>
+                    <input type="number" name="harga" class="field-input" required placeholder="Contoh: 10000">
+                    @error('harga') <span class="field-error">{{ $message }}</span> @enderror
                 </div>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Keterangan (Opsional)</label>
-                <textarea name="keterangan" class="form-control" rows="3" style="width: 100%; padding: 8px;"></textarea>
+            <div class="field-group">
+                <label class="field-label">Keterangan (Opsional)</label>
+                <textarea name="keterangan" class="field-input" rows="3" placeholder="Catatan tambahan..."></textarea>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; border-radius: 6px;">💾 Simpan Barang</button>
-                <a href="{{ route('barang.index') }}" class="btn" style="padding: 10px 20px; background: #64748b; color: white; text-decoration: none; border-radius: 6px;">Batal</a>
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Simpan Barang</button>
+                <a href="{{ route('barang.index') }}" class="btn-cancel">Batal</a>
             </div>
         </form>
     </div>
+</div>
 @endsection
