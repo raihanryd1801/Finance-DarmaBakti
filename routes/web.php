@@ -14,14 +14,16 @@ Route::middleware(['auth'])->group(function () {
     // Halaman Utama / Home
     Route::get('/', [UangMasukController::class, 'index'])->name('home');
 
+    // Report
+    Route::get('/finance/report', [UangMasukController::class, 'report'])->name('finance.report');
+
     // Keuangan / Uang Masuk
     Route::get('/finance/uang-masuk', [UangMasukController::class, 'index'])->name('uang_masuk.index');
     Route::get('/finance/uang-masuk/create', [UangMasukController::class, 'create'])->name('uang_masuk.create');
     Route::post('/finance/uang-masuk', [UangMasukController::class, 'store'])->name('uang_masuk.store');
     Route::post('/finance/uang-masuk/import', [UangMasukController::class, 'import'])->name('uang_masuk.import');
 
-    // Report
-    Route::get('/finance/report', [UangMasukController::class, 'report'])->name('finance.report');
+    
 
     // Edit, Update, Delete
     Route::get('/finance/uang-masuk/{id}/edit', [UangMasukController::class, 'edit'])->name('uang_masuk.edit');
@@ -39,6 +41,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/darma/invoice/create', [App\Http\Controllers\InvoiceController::class, 'create'])->name('invoice.create');
     Route::post('/darma/invoice/store', [App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
     Route::get('/darma/invoice/{id}/print', [App\Http\Controllers\InvoiceController::class, 'print'])->name('invoice.print');
+    //LUNAS
+    Route::post('/darma/invoice/{id}/lunas/{kategori}', [App\Http\Controllers\InvoiceController::class, 'tandaiLunas'])->name('invoice.lunas');
+    Route::get('/darma/invoice/{id}/edit', [App\Http\Controllers\InvoiceController::class, 'edit'])->name('invoice.edit');
+    Route::post('/darma/invoice/{id}/update', [App\Http\Controllers\InvoiceController::class, 'update'])->name('invoice.update');
+    Route::post('/darma/invoice/{id}/destroy', [App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoice.destroy');
 
     // --- MODULE MASTER DATA BARANG ---
     Route::get('/darma/barang', [App\Http\Controllers\BarangController::class, 'index'])->name('barang.index');
@@ -47,6 +54,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/darma/{id}/edit', [App\Http\Controllers\BarangController::class, 'edit'])->name('barang.edit');
     Route::post('/darma/{id}/update', [App\Http\Controllers\BarangController::class, 'update'])->name('barang.update');
     Route::post('/darma/{id}/destroy', [App\Http\Controllers\BarangController::class, 'destroy'])->name('barang.destroy');
+
+    
+    
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

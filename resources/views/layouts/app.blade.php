@@ -213,13 +213,6 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
                 Tambah Uang Masuk
             </a>
         </li>
-        <div class="sidebar-section-label">Dokumen</div>
-        <li>
-            <a href="{{ route('dokumen-api.index') }}" class="{{ request()->routeIs('dokumen-api*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Data Dokumen Perusahaan
-            </a>
-        </li>
         <div class="sidebar-section-label">Invoice</div>
         <li>
             <a href="{{ route('invoice.index') }}" class="{{ request()->routeIs('invoice.index*') ? 'active' : '' }}">
@@ -234,6 +227,14 @@ flex-wrap:wrap;gap:15px;padding:10px 0}
                 Master Data Barang
             </a>
         </li>
+        <div class="sidebar-section-label">Dokumen</div>
+        <li>
+            <a href="{{ route('dokumen-api.index') }}" class="{{ request()->routeIs('dokumen-api*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Data Dokumen Perusahaan
+            </a>
+        </li>
+        
     </ul>
 
     <div class="sidebar-footer">
