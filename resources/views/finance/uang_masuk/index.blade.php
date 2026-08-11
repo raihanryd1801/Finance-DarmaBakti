@@ -25,9 +25,9 @@
             height: 34px;
             padding: 0 8px;
             font-size: 0.85rem;
-            color: #334155;
-            background-color: #fff;
-            border: 1px solid #e2e8f0;
+            color: var(--text-primary);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             text-decoration: none;
             line-height: 1;
@@ -35,9 +35,9 @@
         }
 
         .pagination .page-link:hover {
-            background-color: #f1f5f9;
-            border-color: #cbd5e1;
-            color: #1e293b;
+            background-color: var(--table-hover);
+            border-color: var(--border-color);
+            color: var(--text-primary);
         }
 
         .pagination .page-item.active .page-link {
@@ -48,9 +48,9 @@
         }
 
         .pagination .page-item.disabled .page-link {
-            color: #cbd5e1;
-            background-color: #f8fafc;
-            border-color: #e2e8f0;
+            color: var(--text-secondary);
+            background-color: var(--table-header);
+            border-color: var(--border-color);
             cursor: not-allowed;
             pointer-events: none;
         }
@@ -60,11 +60,23 @@
             height: 16px !important;
             display: inline-block;
         }
+
+        .alert-success-box {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+        [data-theme="dark"] .alert-success-box {
+            background: rgba(16, 185, 129, 0.18);
+            color: #6ee7b7;
+        }
     </style>
 
     <!-- Header Atas (Judul & Tombol Tambah/Import) -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;">
-        <h2 style="margin: 0; font-size: 1.5rem; color: #1e293b;">
+        <h2 style="margin: 0; font-size: 1.5rem; color: var(--text-primary);">
             Data Uang Masuk - {{ strtoupper($kategori) }}
         </h2>
         <div style="display: flex; gap: 10px; align-items: center;">
@@ -73,14 +85,14 @@
             <!-- Form Import Excel -->
             <form action="{{ route('uang_masuk.import') }}" method="POST" enctype="multipart/form-data" style="display: inline-flex; gap: 5px; align-items: center;">
                 @csrf
-                <input type="file" name="file_excel" required style="font-size: 0.85rem; background: white; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px;">
+                <input type="file" name="file_excel" required style="font-size: 0.85rem; background: var(--bg-card); color: var(--text-primary); padding: 4px; border: 1px solid var(--border-color); border-radius: 4px;">
                 <button type="submit" class="btn btn-secondary">Import Excel</button>
             </form>
         </div>
     </div>
 
     @if(session('success'))
-        <div style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+        <div class="alert-success-box">
             {{ session('success') }}
         </div>
     @endif
@@ -95,7 +107,7 @@
                 <input type="hidden" name="kategori" value="{{ $kategori }}">
 
                 <div>
-                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Instansi</label>
+                    <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 2px;">Instansi</label>
                     <select name="instansi" class="form-control">
                         <option value="">-- Semua Instansi --</option>
                         @foreach($listInstansi as $instansi)
@@ -107,17 +119,17 @@
                 </div>
 
                 <div>
-                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Dari Tanggal</label>
+                    <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 2px;">Dari Tanggal</label>
                     <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
                 </div>
 
                 <div>
-                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Sampai Tanggal</label>
+                    <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 2px;">Sampai Tanggal</label>
                     <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
                 </div>
 
                 <div style="flex-grow: 1; min-width: 200px;">
-                    <label style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px;">Cari Data</label>
+                    <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 2px;">Cari Data</label>
                     <input type="text" name="search" placeholder="Cari nama pengadaan / keterangan..." value="{{ request('search') }}" class="form-control" style="width: 100%;">
                 </div>
 
@@ -251,7 +263,7 @@
                     @empty
                         <!-- KONDISI JIKA DATA KOSONG -->
                         <tr>
-                            <td colspan="{{ $kategori == 'swasta' ? 11 : 16 }}" style="text-align: center; color: #6b7280; padding: 3rem;">
+                            <td colspan="{{ $kategori == 'swasta' ? 11 : 16 }}" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
                                 Belum ada data uang masuk untuk kategori {{ strtoupper($kategori) }}.
                             </td>
                         </tr>
