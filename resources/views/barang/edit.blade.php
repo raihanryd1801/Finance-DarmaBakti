@@ -11,6 +11,19 @@
         --text-muted: #64748b;
         --danger: #dc2626;
         --radius: 12px;
+        --input-bg: #ffffff;
+        --cancel-bg: #f1f5f9;
+        --cancel-bg-hover: #e2e8f0;
+    }
+
+    [data-theme="dark"] {
+        --surface: #1e293b;
+        --border: #334155;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --input-bg: #0f172a;
+        --cancel-bg: #334155;
+        --cancel-bg-hover: #475569;
     }
 
     .form-wrap {
@@ -25,6 +38,7 @@
         border-radius: var(--radius);
         padding: 28px;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .form-title {
@@ -66,8 +80,8 @@
         border-radius: 8px;
         font-size: 14px;
         color: var(--text);
-        background: #fff;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        background: var(--input-bg);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
         box-sizing: border-box;
         font-family: inherit;
     }
@@ -115,7 +129,7 @@
     .btn-cancel {
         padding: 11px 22px;
         border-radius: 8px;
-        background: #f1f5f9;
+        background: var(--cancel-bg);
         color: var(--text-muted);
         font-weight: 600;
         font-size: 14px;
@@ -125,7 +139,7 @@
     }
 
     .btn-cancel:hover {
-        background: #e2e8f0;
+        background: var(--cancel-bg-hover);
         color: var(--text);
     }
 
