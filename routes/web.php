@@ -63,6 +63,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/darmapp/rekening/{id}/update', [App\Http\Controllers\RekeningController::class, 'update'])->name('rekening.update');
     Route::post('/darmapp/rekening/{id}/destroy', [App\Http\Controllers\RekeningController::class, 'destroy'])->name('rekening.destroy');
     
+    //USER CONTROLLER
+    Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
+    Route::post('/users/{id}/update', [App\Http\Controllers\UserController::class, 'update'])->name('users.update');
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
