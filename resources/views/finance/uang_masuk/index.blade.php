@@ -79,6 +79,9 @@
         <h2 style="margin: 0; font-size: 1.5rem; color: var(--text-primary);">
             Data Uang Masuk - {{ strtoupper($kategori) }}
         </h2>
+        
+        <!-- HANYA ADMIN YANG BISA LIHAT TOMBOL TAMBAH & IMPORT -->
+        @if(Auth::check() && Auth::user()->role == 'admin')
         <div style="display: flex; gap: 10px; align-items: center;">
             <a href="{{ route('uang_masuk.create') }}" class="btn btn-success">+ Tambah Data</a>
 
@@ -89,6 +92,7 @@
                 <button type="submit" class="btn btn-secondary">Import Excel</button>
             </form>
         </div>
+        @endif
     </div>
 
     @if(session('success'))
@@ -157,10 +161,12 @@
                             <th>INSTANSI</th>
                             <th>Rekening</th>
                             <th>Keterangan</th>
-                            <th style="text-align: center;">Aksi</th>
+                            @if(Auth::check() && Auth::user()->role == 'admin')
+                                <th style="padding: 12px; text-align: center;">Aksi</th>
+                            @endif
                         </tr>
                     @else
-                        <!-- HEADER TABEL PEMERINTAH (Lengkap dengan Nilai Dokumen & Selisih) -->
+                        <!-- HEADER TABEL PEMERINTAH -->
                         <tr>
                             <th>Instansi</th>
                             <th>Nama Pengadaan</th>
@@ -177,7 +183,9 @@
                             <th>Rekening</th>
                             <th>NO PENGEMBALIAN</th>
                             <th>SUDAH BUAT FAKTUR</th>
-                            <th style="text-align: center;">Aksi</th>
+                            @if(Auth::check() && Auth::user()->role == 'admin')
+                                <th style="text-align: center;">Aksi</th>
+                            @endif
                         </tr>
                     @endif
                 </thead>
@@ -193,18 +201,19 @@
                                 <td class="angka" style="color: #0284c7;">Rp {{ number_format((float)$row->ppn, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->nilai_nota, 0, ',', '.') }}</td>
                                 <!-- KOLOM SELISIH -->
-<td class="angka" style="{{ $row->selisih < 0 ? 'color: red; font-weight: bold;' : '' }}">
-    @if($row->selisih == 0)
-        <span style="color: #94a3b8;">0</span>
-    @else
-        Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
-    @endif
-</td>
+                                <td class="angka" style="{{ $row->selisih < 0 ? 'color: red; font-weight: bold;' : '' }}">
+                                    @if($row->selisih == 0)
+                                        <span style="color: #94a3b8;">0</span>
+                                    @else
+                                        Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
+                                    @endif
+                                </td>
                                 <td><strong>{{ $row->instansi }}</strong></td>
                                 <td>{{ $row->rekening_tujuan ?? '-' }}</td>
                                 <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->keterangan ?? '-' }}</td>
 
-                                <!-- Tombol Aksi Swasta -->
+                                <!-- Tombol Aksi Swasta HANYA ADMIN -->
+                                @if(Auth::check() && Auth::user()->role == 'admin')
                                 <td style="text-align: center; white-space: nowrap;">
                                     <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
                                     <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
@@ -213,6 +222,7 @@
                                         <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
                                     </form>
                                 </td>
+                                @endif
                             </tr>
                         @else
                             <!-- ISI TABEL PEMERINTAH -->
@@ -225,20 +235,15 @@
                                 <td class="angka" style="color: #d97706;">Rp {{ number_format((float)$row->pph_22, 0, ',', '.') }}</td>
                                 <td class="angka" style="font-weight: bold; color: #047857;">Rp {{ number_format((float)$row->total_diterima, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->total_rekening_koran, 0, ',', '.') }}</td>
-
-                                <!-- Kolom Nilai Dokumen -->
                                 <td class="angka">Rp {{ number_format((float)$row->nilai_nota, 0, ',', '.') }}</td>
-
-                                <!-- Kolom Selisih -->
                                 <!-- KOLOM SELISIH -->
-<td class="angka" style="{{ $row->selisih < 0 ? 'color: red; font-weight: bold;' : '' }}">
-    @if($row->selisih == 0)
-        <span style="color: #94a3b8;">0</span>
-    @else
-        Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
-    @endif
-</td>
-
+                                <td class="angka" style="{{ $row->selisih < 0 ? 'color: red; font-weight: bold;' : '' }}">
+                                    @if($row->selisih == 0)
+                                        <span style="color: #94a3b8;">0</span>
+                                    @else
+                                        Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
+                                    @endif
+                                </td>
                                 <td style="text-align: center;">
                                     <span class="badge {{ $row->status_transfer == 'SUDAH' ? 'bg-success' : 'bg-warning' }}">
                                         {{ $row->status_transfer ?? 'BELUM' }}
@@ -249,7 +254,8 @@
                                 <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->status_pengembalian ?? '-' }}</td>
                                 <td style="text-align: center;">{{ $row->status_faktur ?? '-' }}</td>
 
-                                <!-- Tombol Aksi Pemerintah -->
+                                <!-- Tombol Aksi Pemerintah HANYA ADMIN -->
+                                @if(Auth::check() && Auth::user()->role == 'admin')
                                 <td style="text-align: center; white-space: nowrap;">
                                     <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
                                     <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
@@ -258,12 +264,13 @@
                                         <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
                                     </form>
                                 </td>
+                                @endif
                             </tr>
                         @endif
                     @empty
                         <!-- KONDISI JIKA DATA KOSONG -->
                         <tr>
-                            <td colspan="{{ $kategori == 'swasta' ? 11 : 16 }}" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                            <td colspan="{{ $kategori == 'swasta' ? (Auth::check() && Auth::user()->role == 'admin' ? 11 : 10) : (Auth::check() && Auth::user()->role == 'admin' ? 16 : 15) }}" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
                                 Belum ada data uang masuk untuk kategori {{ strtoupper($kategori) }}.
                             </td>
                         </tr>
