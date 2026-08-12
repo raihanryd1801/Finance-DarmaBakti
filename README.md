@@ -19,7 +19,7 @@ Aplikasi berbasis Laravel untuk membantu pengelolaan keuangan dan administrasi p
 | Uang Masuk        | ![Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)             |
 | Tambah Uang Masuk | ![Tambah Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/tambahuangmasuk.png) |
 | Report Uang Masuk | ![Report Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasukp.png)      |
-| Invoice           | ![Invoice](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/invoce.png)                    |
+| Invoice           | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/cetakinvoice.png)        |
 | Cetak Invoice     | ![Cetak Invoice](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/cetakinvoice.png)        |
 | Invoice PDF       | ![Invoice PDF](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/invoicepdf.jpeg)           |
 | Daftar Rekening   | ![Daftar Rekening](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/daftarrek.jpeg)        |
