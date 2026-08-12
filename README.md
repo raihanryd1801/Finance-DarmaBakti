@@ -7,52 +7,230 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+💼 Darmabakti Application
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistem Manajemen Keuangan & Administrasi berbasis Laravel
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Darmabakti merupakan aplikasi berbasis web yang dirancang untuk membantu pengelolaan administrasi dan keuangan secara lebih terstruktur, mulai dari Uang Masuk, Invoice, Rekening, hingga User Management.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+✨ Fitur Utama
 
-## Learning Laravel
+Modul
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Keterangan
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+💰 Uang Masuk
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Pencatatan dan pengelolaan transaksi uang masuk
 
-## Agentic Development
+🧾 Invoice
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Membuat, mengelola, dan mencetak invoice
 
-```bash
-composer require laravel/boost --dev
+🏦 Rekening
 
-php artisan boost:install
-```
+Pengelolaan data rekening
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+📊 Dashboard
 
-## Contributing
+Ringkasan dan monitoring data keuangan
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+👥 User Management
 
-## Code of Conduct
+Pengelolaan pengguna aplikasi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+📄 Invoice PDF
 
-## Security Vulnerabilities
+Preview dan pembuatan invoice dalam format PDF
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+🔐 Authentication
 
-## License
+Sistem login dan pengelolaan akses pengguna
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+🛠️ Teknologi
+
+<p>
+<img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white">
+<img src="https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=for-the-badge&logo=php&logoColor=white">
+<img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+<img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
+<img src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white">
+</p>
+
+🚀 Instalasi
+
+1. Clone Repository
+
+git clone <url-repository>
+cd darmabakti
+
+2. Install Dependencies
+
+Install dependency Laravel:
+
+composer install
+
+Install dependency frontend:
+
+npm install
+
+Build asset:
+
+npm run build
+
+3. Konfigurasi Environment
+
+⚠️ Penting: Jangan pernah melakukan commit atau push file .env ke repository GitHub karena dapat berisi password database, API key, dan konfigurasi sensitif lainnya.
+
+Salin file environment:
+
+cp .env.example .env
+
+Kemudian sesuaikan konfigurasi database pada .env:
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database_anda
+DB_USERNAME=root
+DB_PASSWORD=
+
+4. Generate Application Key
+
+php artisan key:generate
+
+5. Setup Database
+
+Pastikan database sudah dibuat, kemudian jalankan migration:
+
+php artisan migrate
+
+6. Jalankan Aplikasi
+
+php artisan serve
+
+Aplikasi dapat diakses melalui:
+
+http://127.0.0.1:8000
+
+🖥️ Tampilan Aplikasi
+
+📊 Dashboard
+
+💰 Uang Masuk
+
+➕ Tambah Uang Masuk
+
+📈 Report Uang Masuk
+
+🧾 Invoice
+
+🖨️ Cetak Invoice
+
+📄 Invoice PDF
+
+🏦 Daftar Rekening
+
+👥 User Management
+
+✏️ Edit User
+
+📁 Struktur Project
+
+darmabakti/
+├── app/
+├── bootstrap/
+├── config/
+├── database/
+├── public/
+├── resources/
+├── routes/
+├── storage/
+├── tests/
+├── .env.example
+├── artisan
+├── composer.json
+├── package.json
+└── README.md
+
+⚙️ Perintah Laravel
+
+Clear seluruh cache:
+
+php artisan optimize:clear
+
+Melihat daftar route:
+
+php artisan route:list
+
+Melihat status migration:
+
+php artisan migrate:status
+
+Masuk ke Laravel Tinker:
+
+php artisan tinker
+
+Menjalankan test:
+
+php artisan test
+
+🔒 Security
+
+Sebelum aplikasi digunakan pada production, pastikan:
+
+.env tidak masuk repository
+
+APP_DEBUG=false
+
+Password database menggunakan credential yang aman
+
+Gunakan HTTPS
+
+Gunakan password administrator yang kuat
+
+Batasi akses database
+
+Jangan menyimpan API key atau credential sensitif di source code
+
+Untuk production:
+
+APP_ENV=production
+APP_DEBUG=false
+
+📌 Production Deployment
+
+Setelah aplikasi dipasang pada server production:
+
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+npm install
+npm run build
+php artisan storage:link
+
+Web server harus diarahkan ke:
+
+/var/www/html/darmabakti/public
+
+Jangan mengarahkan document root ke folder utama project Laravel. Gunakan folder public.
+
+👨‍💻 Development
+
+Untuk development dengan Vite:
+
+npm run dev
+
+Kemudian jalankan Laravel:
+
+php artisan serve
+
+📄 License
+
+Project ini menggunakan lisensi MIT.
+
+<p align="center">
+  Made with ❤️ using Laravel
+</p>
