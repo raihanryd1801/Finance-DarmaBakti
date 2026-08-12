@@ -7,28 +7,29 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Sistem Manajemen Keuangan - Konveksi
+## Sistem Manajemen APP - Konveksi
 
 Aplikasi berbasis Laravel untuk membantu pengelolaan keuangan dan administrasi perusahaan. Aplikasi mencakup pencatatan Uang Masuk, pembuatan Invoice, pengelolaan Rekening, Master Barang, User Management, serta laporan keuangan.
 
 ## Tampilan Aplikasi
 
-| Halaman               | Dokumentasi                                                                                                                |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Dashboard Report      | ![Dashboard Report](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/dashboardreport.png)  |
-| Uang Masuk Swasta     | ![Uang Masuk Swasta](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)            |
-| Uang Masuk Pemerintah | ![Uang Masuk Pemerintah](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasukp.png)  |
-| Tambah Uang Masuk     | ![Tambah Uang Masuk](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/tambahuangmasuk.png) |
-| Data Barang           | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/databarang.png)                |
-| Cetak Invoice         | ![Cetak Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/cetakinvoice.png)        |
-| Invoice PDF           | ![Invoice PDF](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/invoicepdf.jpeg)           |
-| Daftar Rekening       | ![Daftar Rekening](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/daftarrek.jpeg)        |
-| User Management       | ![User Management](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/usermanagement.png)    |
-| Edit User             | ![Edit User](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/edituser.png)                |
+| Halaman                           | Dokumentasi                                                                                                                |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard Report                  | ![Dashboard Report](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/dashboardreport.png)  |
+| Uang Masuk Swasta                 | ![Uang Masuk Swasta](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)            |
+| Uang Masuk Pemerintah             | ![Uang Masuk Pemerintah](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasukp.png)  |
+| Tambah Uang Masuk                 | ![Tambah Uang Masuk](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/tambahuangmasuk.png) |
+| Data Barang                       | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/databarang.png)                |
+| Cetak Invoice                     | ![Cetak Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/cetakinvoice.png)        |
+| Invoice PDF                       | ![Invoice PDF](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/invoicepdf.jpeg)           |
+| Daftar Rekening                   | ![Daftar Rekening](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/daftarrek.jpeg)        |
+| User Management                   | ![User Management](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/usermanagement.png)    |
+| Edit User                         | ![Edit User](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/edituser.png)                |
+| Dokument API dari Dashboard-Arsip | ![Edit User](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/arsip.png)                   |
 
 ---
 
-# Darmabakti
+# Darmabakti APP
 
 Aplikasi manajemen keuangan berbasis Laravel yang digunakan untuk mencatat dan mengelola transaksi keuangan, invoice, rekening, barang, serta pengguna aplikasi.
 
