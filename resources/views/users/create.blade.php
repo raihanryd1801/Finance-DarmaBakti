@@ -6,14 +6,13 @@
     .form-header { padding:20px 4px; border-bottom:1px solid var(--border-color); margin-bottom:24px; }
     .form-header h3 { margin:0; font-size:19px; font-weight:700; }
     .form-header p { margin:4px 0 0; font-size:13px; color:var(--text-secondary,#64748b); }
-    .alert-success { background:var(--success-bg,#d1fae5); color:var(--success-text,#065f46); padding:10px 15px; border-radius:8px; margin-bottom:16px; font-size:14px; border:1px solid #a7f3d0; }
+    .alert-error { background:#fee2e2; color:#991b1b; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:13px; border:1px solid #fecaca; }
+    .alert-error ul { margin:0; padding-left:18px; }
     .form-section { max-width:640px; background:var(--bg-body); border:1px solid var(--border-color); border-radius:12px; padding:22px; margin-bottom:24px; }
     .field-group { margin-bottom:16px; }
     .field-group:last-child { margin-bottom:0; }
     .field-label { display:block; font-weight:600; font-size:13px; margin-bottom:6px; }
     .field-input { width:100%; padding:10px 14px; border:1px solid var(--border-color); border-radius:8px; font-size:14px; background:var(--surface,transparent); color:var(--text-primary); box-sizing:border-box; font-family:inherit; }
-    .field-input:disabled { opacity:.6; cursor:not-allowed; }
-    .field-hint { font-size:12px; color:var(--text-secondary,#64748b); margin-top:5px; }
     .divider { border:0; border-top:1px solid var(--border-color); margin:24px 0; }
     .perm-lead { font-weight:700; font-size:15px; margin:0 0 16px 4px; }
     .perm-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-bottom:28px; }
@@ -33,44 +32,47 @@
 
 <div class="form-page">
     <div class="form-header">
-        <h3>Edit User & Hak Akses</h3>
-        <p>{{ $user->email }}</p>
+        <h3>Tambah User Baru</h3>
+        <p>Buat akun pengguna baru beserta hak aksesnya</p>
     </div>
 
-    @if(session('success'))
-        <div class="alert-success">{{ session('success') }}</div>
+    @if($errors->any())
+        <div class="alert-error">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
-    <form action="{{ route('users.update', $user->id) }}" method="POST">
+    <form action="{{ route('users.store') }}" method="POST">
         @csrf
 
         <div class="form-section">
             <div class="field-group">
-                <label class="field-label">Email</label>
-                <input type="email" class="field-input" value="{{ $user->email }}" disabled>
-                <div class="field-hint">Email tidak dapat diubah</div>
+                <label class="field-label">Email User</label>
+                <input type="email" name="email" class="field-input" value="{{ old('email') }}" required placeholder="cth: staff@finance.com">
             </div>
 
             <div class="field-group">
-                <label class="field-label">Password Baru</label>
-                <input type="password" name="password" class="field-input" placeholder="Isi jika ingin mereset password">
-                <div class="field-hint">Kosongkan jika tidak ingin mengubah password</div>
+                <label class="field-label">Password</label>
+                <input type="password" name="password" class="field-input" required placeholder="Minimal 6 karakter">
             </div>
 
             <div class="field-group">
                 <label class="field-label">Role / Level</label>
                 <select name="role" class="field-input" required>
-                    <option value="viewer" {{ $user->role == 'viewer' ? 'selected' : '' }}>Viewer (Staff / Pembatas Menu)</option>
-                    <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin (Akses Penuh)</option>
+                    <option value="viewer">Viewer (Staff / Pembatas Menu)</option>
+                    <option value="admin">Admin (Akses Penuh)</option>
                 </select>
             </div>
         </div>
 
         <hr class="divider">
-        <p class="perm-lead">Hak akses menu & aksi untuk user ini</p>
+        <p class="perm-lead">Hak akses menu & aksi (khusus role Viewer)</p>
 
         @php
-            $currentPerms = $user->permissions ?? [];
             $permissionGroups = [
                 'Data Report Keuangan' => [
                     'finance_report' => 'Lihat Halaman Report'
@@ -106,7 +108,7 @@
                     <div class="perm-items">
                         @foreach($permissions as $key => $label)
                             <label class="perm-chip">
-                                <input type="checkbox" name="permissions[]" value="{{ $key }}" {{ in_array($key, $currentPerms) ? 'checked' : '' }}>
+                                <input type="checkbox" name="permissions[]" value="{{ $key }}">
                                 {{ $label }}
                             </label>
                         @endforeach
@@ -116,7 +118,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn-save">Simpan Perubahan</button>
+            <button type="submit" class="btn-save">Simpan User Baru</button>
             <a href="{{ route('users.index') }}" class="btn-back">Kembali</a>
         </div>
     </form>
