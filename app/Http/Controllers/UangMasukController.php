@@ -15,12 +15,10 @@ class UangMasukController extends Controller
         $kategori = $request->get('kategori', 'pemerintah');
         $query = UangMasuk::where('kategori', $kategori);
 
-        // Filter Instansi
         if ($request->filled('instansi')) {
             $query->where('instansi', $request->instansi);
         }
 
-        // Filter Search (Kata Kunci)
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
                 $q->where('nama_pengadaan', 'like', '%' . $request->search . '%')
@@ -28,7 +26,6 @@ class UangMasukController extends Controller
             });
         }
 
-        // BARU: Filter Rentang Tanggal Transfer
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tanggal_transfer', [$request->start_date, $request->end_date]);
         }
@@ -48,65 +45,79 @@ class UangMasukController extends Controller
     // --- METHOD STORE ---
     public function store(Request $request)
     {
-        // 1. Bersihkan input nominal Rupiah (Sudah Benar)
-        $input_string = $request->jumlah_nominal_input ?? '0';
-        $clean_string = str_replace(['Rp', 'rp', ' ', '.'], '', $input_string);
-        $clean_string = str_replace(',', '.', $clean_string);
-        $nominal = (float) $clean_string;
-        
-        // Bersihkan input Nilai Nota/Dokumen jika ada (untuk hitung selisih markup)
-        $input_nota_str = $request->nilai_nota ?? '0';
-        $clean_nota = str_replace(['Rp', 'rp', ' ', '.'], '', $input_nota_str);
-        $nilai_nota = (float) str_replace(',', '.', $clean_nota);
+        // 1. Bersihkan Input dari Rp, Titik, dan Spasi
+        $nominal      = (float) preg_replace('/[^0-9]/', '', $request->jumlah_nominal_input ?? '0');
+        $biaya_admin  = (float) preg_replace('/[^0-9]/', '', $request->biaya_admin ?? '0');
+        $nilai_nota   = (float) preg_replace('/[^0-9]/', '', $request->nilai_nota ?? '0');
 
-        $biaya_admin = $request->jenis_transfer_bank == 'beda' ? (float) preg_replace('/[^0-9.]/', '', $request->biaya_admin) : 0;
-        
         $include_ppn = 0; $exclude_ppn = 0; $ppn = 0; $pph_22 = 0;
 
-        // 2. LOGIKA CENTANG PPN (11%)
-        if ($request->has('potong_ppn')) {
-            $include_ppn = $nominal;
-            $exclude_ppn = $include_ppn / 1.11;
-            $ppn = $include_ppn - $exclude_ppn;
+        // 2. LOGIKA PERHITUNGAN BERDASARKAN KATEGORI
+        if ($request->kategori == 'pemerintah') {
+            // RUMUS PEMERINTAH (Hitung Mundur / 0.985)
+            if ($request->has('potong_pph')) {
+                $exclude_ppn = $nominal / 0.985;
+                $pph_22      = $exclude_ppn * 0.015;
+            } else {
+                $exclude_ppn = $nominal;
+                $pph_22      = 0;
+            }
+
+            if ($request->has('potong_ppn')) {
+                $ppn         = $exclude_ppn * 0.11;
+                $include_ppn = $exclude_ppn + $ppn;
+            } else {
+                $ppn         = 0;
+                $include_ppn = $exclude_ppn;
+            }
         } else {
-            $include_ppn = $nominal;
-            $exclude_ppn = $nominal;
+            // RUMUS SWASTA (Normal / 1.11)
+            if ($request->has('potong_ppn')) {
+                $include_ppn = $nominal;
+                $exclude_ppn = $include_ppn / 1.11;
+                $ppn         = $include_ppn - $exclude_ppn;
+            } else {
+                $include_ppn = $nominal;
+                $exclude_ppn = $nominal;
+                $ppn         = 0;
+            }
+
+            if ($request->has('potong_pph')) {
+                $pph_22 = $exclude_ppn * 0.015;
+            } else {
+                $pph_22 = 0;
+            }
         }
 
-        // 3. LOGIKA CENTANG PPH 22 (1.5%)
-        if ($request->has('potong_pph')) {
-            $pph_22 = $exclude_ppn * 0.015;
-        }
-
-        // 4. Hitung Akhir
-        $total_diterima = $exclude_ppn - $pph_22;
+        // 3. Hitung Total & Rekening Koran
+        $total_diterima       = $exclude_ppn - $pph_22; // Bersih (Kurang PPh 22)
+        $total_bruto          = $total_diterima + $ppn + $pph_22; // Sesuai rumus Excel Abang
         $total_rekening_koran = $total_diterima - $biaya_admin;
 
-       // RUMUS SELISIH KLIEN: Total (Include PPN) - Nilai Dokumen
+        // 4. RUMUS SELISIH
         if ($nilai_nota > 0) {
-            $selisih = $include_ppn - $nilai_nota;
+            $selisih = $total_bruto - $nilai_nota;
         } else {
-            // Default jika nilai nota tidak diisi
             $selisih = $total_rekening_koran - $total_diterima;
         }
 
-        // 5. Simpan ke Database (Perhatikan status_transfer tidak duplikasi lagi)
+        // 5. Simpan ke Database
         UangMasuk::create([
-            'tanggal_transfer' => $request->tanggal_transfer,
-            'kategori' => $request->kategori,
-            'instansi' => strtoupper($request->instansi),
-            'nama_pengadaan' => $request->nama_pengadaan,
-            'keterangan' => $request->keterangan,
-            'rekening_tujuan' => $request->rekening_tujuan,
-            'status_transfer' => $request->status_transfer ?? 'BELUM', // Mengambil dari input form
-            'jumlah_include_ppn' => $include_ppn,
-            'jumlah_exclude_ppn' => $exclude_ppn,
-            'ppn' => $ppn,
-            'pph_22' => $pph_22,
-            'total_diterima' => $total_diterima,
+            'tanggal_transfer'     => $request->tanggal_transfer,
+            'kategori'             => $request->kategori,
+            'instansi'             => strtoupper($request->instansi),
+            'nama_pengadaan'       => $request->nama_pengadaan,
+            'keterangan'           => $request->keterangan,
+            'rekening_tujuan'      => $request->rekening_tujuan,
+            'status_transfer'      => $request->status_transfer ?? 'BELUM', 
+            'jumlah_include_ppn'   => $include_ppn,
+            'jumlah_exclude_ppn'   => $exclude_ppn,
+            'ppn'                  => $ppn,
+            'pph_22'               => $pph_22,
+            'total_diterima'       => $total_diterima,
             'total_rekening_koran' => $total_rekening_koran,
-            'nilai_nota' => $nilai_nota > 0 ? $nilai_nota : null,
-            'selisih' => $selisih,
+            'nilai_nota'           => $nilai_nota > 0 ? $nilai_nota : null,
+            'selisih'              => $selisih,
         ]);
 
         return redirect()->route('uang_masuk.index', ['kategori' => $request->kategori])
@@ -122,10 +133,10 @@ class UangMasukController extends Controller
 
         Excel::import(new UangMasukImport, $request->file('file_excel'));
 
-        return redirect()->route('uang_masuk.index')->with('success', 'Data Excel Pemerintah & Swasta berhasil di-import sekaligus!');
+        return redirect()->route('uang_masuk.index')->with('success', 'Data Excel berhasil di-import!');
     }
 
-    // --- METHOD REPORT YANG SUDAH BERSIH DARI HTML ---
+    // --- METHOD REPORT ---
     public function report(Request $request)
     {
         $query = UangMasuk::query();
@@ -141,11 +152,11 @@ class UangMasukController extends Controller
             $rekapQuery->where('instansi', $request->instansi);
         }
 
-        $totalIncludePpn = $query->sum('jumlah_include_ppn');
-        $totalExcludePpn = $query->sum('jumlah_exclude_ppn');
-        $totalPpn = $query->sum('ppn');
-        $totalPph22 = $query->sum('pph_22');
-        $totalDiterima = $query->sum('total_diterima');
+        $totalIncludePpn    = $query->sum('jumlah_include_ppn');
+        $totalExcludePpn    = $query->sum('jumlah_exclude_ppn');
+        $totalPpn           = $query->sum('ppn');
+        $totalPph22         = $query->sum('pph_22');
+        $totalDiterima      = $query->sum('total_diterima');
         $totalRekeningKoran = $query->sum('total_rekening_koran');
 
         $rekapPerInstansi = $rekapQuery->select('instansi')
@@ -158,7 +169,6 @@ class UangMasukController extends Controller
 
         $listInstansi = UangMasuk::select('instansi')->whereNotNull('instansi')->distinct()->pluck('instansi');
 
-        // PASTIKAN NAMA FILE DAN FOLDER INI TEPAT DIBUAT (resources/views/finance/report.blade.php)
         return view('finance.report', compact(
             'totalIncludePpn', 
             'totalExcludePpn', 
@@ -170,6 +180,7 @@ class UangMasukController extends Controller
             'listInstansi'
         ));
     }
+
     // --- METHOD EDIT ---
     public function edit($id)
     {
@@ -178,72 +189,83 @@ class UangMasukController extends Controller
     }
 
     // --- METHOD UPDATE ---
-    // --- METHOD UPDATE ---
     public function update(Request $request, $id)
     {
         $uangMasuk = UangMasuk::findOrFail($id);
 
-        // 1. Bersihkan input nominal Rupiah (Sudah Benar)
-        $input_string = $request->jumlah_nominal_input ?? '0';
-        $clean_string = str_replace(['Rp', 'rp', ' ', '.'], '', $input_string);
-        $clean_string = str_replace(',', '.', $clean_string);
-        $nominal = (float) $clean_string;
-
-        // 2. Bersihkan input Nilai Nota / Dokumen
-        $input_nota_str = $request->nilai_nota ?? '0';
-        $clean_nota = str_replace(['Rp', 'rp', ' ', '.'], '', $input_nota_str);
-        $nilai_nota = (float) str_replace(',', '.', $clean_nota);
-
-        $biaya_admin = $request->jenis_transfer_bank == 'beda' ? (float) preg_replace('/[^0-9.]/', '', $request->biaya_admin) : 0;
+        // 1. Bersihkan Input dari Rp, Titik, dan Spasi
+        $nominal      = (float) preg_replace('/[^0-9]/', '', $request->jumlah_nominal_input ?? '0');
+        $nilai_nota   = (float) preg_replace('/[^0-9]/', '', $request->nilai_nota ?? '0');
+        $biaya_admin  = (float) preg_replace('/[^0-9]/', '', $request->biaya_admin ?? '0');
         
         $include_ppn = 0; $exclude_ppn = 0; $ppn = 0; $pph_22 = 0;
 
-        // ... (lanjutkan ke logika centang PPN seperti biasa)
+        // 2. LOGIKA PERHITUNGAN BERDASARKAN KATEGORI
+        if ($request->kategori == 'pemerintah') {
+            // RUMUS PEMERINTAH (Hitung Mundur / 0.985)
+            if ($request->has('potong_pph')) {
+                $exclude_ppn = $nominal / 0.985;
+                $pph_22      = $exclude_ppn * 0.015;
+            } else {
+                $exclude_ppn = $nominal;
+                $pph_22      = 0;
+            }
 
-        // 2. LOGIKA CENTANG PPN (11%)
-        if ($request->has('potong_ppn')) {
-            $include_ppn = $nominal;
-            $exclude_ppn = $include_ppn / 1.11;
-            $ppn = $include_ppn - $exclude_ppn;
+            if ($request->has('potong_ppn')) {
+                $ppn         = $exclude_ppn * 0.11;
+                $include_ppn = $exclude_ppn + $ppn;
+            } else {
+                $ppn         = 0;
+                $include_ppn = $exclude_ppn;
+            }
         } else {
-            $include_ppn = $nominal;
-            $exclude_ppn = $nominal;
+            // RUMUS SWASTA (Normal / 1.11)
+            if ($request->has('potong_ppn')) {
+                $include_ppn = $nominal;
+                $exclude_ppn = $include_ppn / 1.11;
+                $ppn         = $include_ppn - $exclude_ppn;
+            } else {
+                $include_ppn = $nominal;
+                $exclude_ppn = $nominal;
+                $ppn         = 0;
+            }
+
+            if ($request->has('potong_pph')) {
+                $pph_22 = $exclude_ppn * 0.015;
+            } else {
+                $pph_22 = 0;
+            }
         }
 
-        // 3. LOGIKA CENTANG PPH 22 (1.5%)
-        if ($request->has('potong_pph')) {
-            $pph_22 = $exclude_ppn * 0.015;
-        }
-
-        // 4. Hitung Akhir
-        $total_diterima = $exclude_ppn - $pph_22;
+        // 3. Hitung Total & Rekening Koran
+        $total_diterima       = $exclude_ppn - $pph_22;
+        $total_bruto          = $total_diterima + $ppn + $pph_22;
         $total_rekening_koran = $total_diterima - $biaya_admin;
 
-        // RUMUS SELISIH KLIEN: Total (Include PPN) - Nilai Dokumen
+        // 4. RUMUS SELISIH
         if ($nilai_nota > 0) {
-            $selisih = $include_ppn - $nilai_nota;
+            $selisih = $total_bruto - $nilai_nota;
         } else {
-            // Default jika nilai nota tidak diisi
             $selisih = $total_rekening_koran - $total_diterima;
         }
 
         // 5. Update ke Database
         $uangMasuk->update([
-            'tanggal_transfer' => $request->tanggal_transfer,
-            'kategori' => $request->kategori,
-            'instansi' => strtoupper($request->instansi),
-            'nama_pengadaan' => $request->nama_pengadaan,
-            'keterangan' => $request->keterangan,
-            'rekening_tujuan' => $request->rekening_tujuan,
-            'status_transfer' => $request->status_transfer,
-            'jumlah_include_ppn' => $include_ppn,
-            'jumlah_exclude_ppn' => $exclude_ppn,
-            'ppn' => $ppn,
-            'pph_22' => $pph_22,
-            'total_diterima' => $total_diterima,
+            'tanggal_transfer'     => $request->tanggal_transfer,
+            'kategori'             => $request->kategori,
+            'instansi'             => strtoupper($request->instansi),
+            'nama_pengadaan'       => $request->nama_pengadaan,
+            'keterangan'           => $request->keterangan,
+            'rekening_tujuan'      => $request->rekening_tujuan,
+            'status_transfer'      => $request->status_transfer,
+            'jumlah_include_ppn'   => $include_ppn,
+            'jumlah_exclude_ppn'   => $exclude_ppn,
+            'ppn'                  => $ppn,
+            'pph_22'               => $pph_22,
+            'total_diterima'       => $total_diterima,
             'total_rekening_koran' => $total_rekening_koran,
-            'nilai_nota' => $nilai_nota > 0 ? $nilai_nota : null,
-            'selisih' => $selisih,
+            'nilai_nota'           => $nilai_nota > 0 ? $nilai_nota : null,
+            'selisih'              => $selisih,
         ]);
 
         return redirect()->route('uang_masuk.index', ['kategori' => $request->kategori])
@@ -254,7 +276,7 @@ class UangMasukController extends Controller
     public function destroy($id)
     {
         $uangMasuk = UangMasuk::findOrFail($id);
-        $kategori = $uangMasuk->kategori; // Simpan kategori sebelum dihapus buat redirect
+        $kategori = $uangMasuk->kategori; 
         
         $uangMasuk->delete();
         

@@ -166,6 +166,7 @@
                         <tr>
                             <th>No</th>
                             <th>Tanggal Transfer</th>
+                            <th style="color: #2766ee;">Jumlah Transfer</th>
                             <th>Jumlah Transfer (Include PPN)</th>
                             <th>Total (Exclude PPN)</th>
                             <th>PPN</th>
@@ -184,10 +185,12 @@
                             <th>Instansi</th>
                             <th>Nama Pengadaan</th>
                             <th>Nama PPK</th>
+                            <th style="color: #2563eb;">Nominal Transfer</th> <!-- TAMBAHKAN INI -->
                             <th>Jumlah (include PPN)</th>
                             <th>Jumlah (exclude PPN)</th>
                             <th>PPh 22</th>
                             <th>Total yang di terima</th>
+                            <th style="background: #e0f2fe; color: #0369a1;">Total (Bruto)</th>
                             <th>Total Rekening Koran</th>
                             <th>Nilai Dokumen</th>
                             <th>Selisih</th>
@@ -209,6 +212,7 @@
                             <tr>
                                 <td style="text-align: center;">{{ $dataUangMasuk->firstItem() + $index }}</td>
                                 <td>{{ $row->tanggal_transfer ? \Carbon\Carbon::parse($row->tanggal_transfer)->translatedFormat('d F Y') : '-' }}</td>
+                                <td class="angka" style="font-weight: bold; color: #2563eb;">Rp {{ number_format((float)$row->jumlah_include_ppn, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->jumlah_include_ppn, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->jumlah_exclude_ppn, 0, ',', '.') }}</td>
                                 <td class="angka" style="color: #0284c7;">Rp {{ number_format((float)$row->ppn, 0, ',', '.') }}</td>
@@ -248,20 +252,36 @@
                                 <td><strong>{{ $row->instansi }}</strong></td>
                                 <td style="max-width: 300px; white-space: normal; word-wrap: break-word;">{{ $row->nama_pengadaan ?? '-' }}</td>
                                 <td>{{ $row->nama_ppk ?? '-' }}</td>
+
+                                <td class="angka" style="font-weight: bold; color: #2563eb;">Rp {{ number_format((float)$row->total_diterima, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->jumlah_include_ppn, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->jumlah_exclude_ppn, 0, ',', '.') }}</td>
                                 <td class="angka" style="color: #d97706;">Rp {{ number_format((float)$row->pph_22, 0, ',', '.') }}</td>
                                 <td class="angka" style="font-weight: bold; color: #047857;">Rp {{ number_format((float)$row->total_diterima, 0, ',', '.') }}</td>
+
+                                <!-- HITUNG KOLOM TOTAL (Diterima + PPN + PPh 22) -->
+                                @php
+                                    $totalBruto = $row->total_diterima + $row->ppn + $row->pph_22;
+                                @endphp
+                                <td class="angka" style="font-weight: bold; background: rgba(224, 242, 254, 0.4); color: #0369a1;">
+                                    Rp {{ number_format((float)$totalBruto, 0, ',', '.') }}
+                                </td>
+
                                 <td class="angka">Rp {{ number_format((float)$row->total_rekening_koran, 0, ',', '.') }}</td>
                                 <td class="angka">Rp {{ number_format((float)$row->nilai_nota, 0, ',', '.') }}</td>
-                                <!-- KOLOM SELISIH -->
-                                <td class="angka" style="{{ $row->selisih < 0 ? 'color: red; font-weight: bold;' : '' }}">
-                                    @if($row->selisih == 0)
+
+                                <!-- KOLOM SELISIH BERDASARKAN TOTAL BRUTO -->
+                                @php
+                                    $selisihExcel = $row->nilai_nota > 0 ? $totalBruto - $row->nilai_nota : 0;
+                                @endphp
+                                <td class="angka" style="{{ $selisihExcel < 0 ? 'color: red; font-weight: bold;' : '' }}">
+                                    @if($selisihExcel == 0)
                                         <span style="color: #94a3b8;">0</span>
                                     @else
-                                        Rp {{ number_format((float)$row->selisih, 0, ',', '.') }}
+                                        Rp {{ number_format((float)$selisihExcel, 0, ',', '.') }}
                                     @endif
                                 </td>
+
                                 <td style="text-align: center;">
                                     <span class="badge {{ $row->status_transfer == 'SUDAH' ? 'bg-success' : 'bg-warning' }}">
                                         {{ $row->status_transfer ?? 'BELUM' }}
@@ -272,13 +292,11 @@
                                 <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->status_pengembalian ?? '-' }}</td>
                                 <td style="text-align: center;">{{ $row->status_faktur ?? '-' }}</td>
 
-                                <!-- Tombol Aksi Pemerintah -->
                                 @if($showActionColumn)
                                 <td style="text-align: center; white-space: nowrap;">
                                     @if($canEdit)
                                         <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
                                     @endif
-
                                     @if($canDelete)
                                         <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
                                             @csrf
