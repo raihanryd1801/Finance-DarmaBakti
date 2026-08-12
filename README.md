@@ -13,18 +13,18 @@ Aplikasi berbasis Laravel untuk membantu pengelolaan keuangan dan administrasi p
 
 ## Tampilan Aplikasi
 
-| Halaman           | Dokumentasi                                                                                                          |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Dashboard Report  | ![Dashboard Report](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/dashboardreport.png)  |
-| Uang Masuk        | ![Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)             |
-| Tambah Uang Masuk | ![Tambah Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/tambahuangmasuk.png) |
-| Report Uang Masuk | ![Report Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasukp.png)      |
-| Invoice           | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/cetakinvoice.png)        |
-| Cetak Invoice     | ![Cetak Invoice](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/cetakinvoice.png)        |
-| Invoice PDF       | ![Invoice PDF](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/invoicepdf.jpeg)           |
-| Daftar Rekening   | ![Daftar Rekening](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/daftarrek.jpeg)        |
-| User Management   | ![User Management](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/usermanagement.png)    |
-| Edit User         | ![Edit User](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/edituser.png)                |
+| Halaman               | Dokumentasi                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard Report      | ![Dashboard Report](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/dashboardreport.png) |
+| Uang Masuk            | ![Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)                  |
+| Tambah Uang Masuk     | ![Tambah Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/tambahuangmasuk.png)      |
+| Report Uang Masuk     | ![Report Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasukp.png)           |
+| Uang Masuk Pemerintah | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasukp.png)               |
+| Cetak Invoice         | ![Cetak Invoice](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/cetakinvoice.png)             |
+| Invoice PDF           | ![Invoice PDF](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/invoicepdf.jpeg)                |
+| Daftar Rekening       | ![Daftar Rekening](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/daftarrek.jpeg)       |
+| User Management       | ![User Management](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/usermanagement.png)   |
+| Edit User             | ![Edit User](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/edituser.png)                     |
 
 ---
 
