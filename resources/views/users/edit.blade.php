@@ -1,35 +1,59 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card" style="padding: 20px; max-width: 600px; margin: 0 auto;">
-    <h3>⚙️ Atur Menu Akses untuk: {{ $user->email }}</h3>
+<div class="card" style="padding: 25px; max-width: 700px; margin: 0 auto;">
+    <h3>⚙️ Atur Hak Akses Detail untuk: {{ $user->email }}</h3>
     
     <form action="{{ route('users.update', $user->id) }}" method="POST" style="margin-top: 20px;">
         @csrf
-        <p style="font-weight: bold; margin-bottom: 15px; color: var(--text-primary);">Pilih menu yang boleh dilihat oleh user ini:</p>
         
         @php
             $currentPerms = $user->permissions ?? [];
-            $menus = [
-                'finance_report' => 'Data Report Keuangan',
-                'uang_masuk_pemerintah' => 'Uang Masuk Pemerintah',
-                'uang_masuk_swasta' => 'Uang Masuk Swasta',
-                'invoice_index'         => 'Cetak Invoice',         // <-- Menu Invoice
-                'barang_index'          => 'Master Data Barang',
+            
+            // Kelompok Menu & Aksi (CRUD)
+            $permissionGroups = [
+                '📊 Data Report Keuangan' => [
+                    'finance_report' => 'Lihat Halaman Report'
+                ],
+                '💰 Modul Uang Masuk' => [
+                    'uang_masuk_pemerintah' => 'Lihat Menu Uang Masuk Pemerintah',
+                    'uang_masuk_swasta'     => 'Lihat Menu Uang Masuk Swasta',
+                    'uang_masuk_create'     => 'Tambah Data Uang Masuk',
+                    'uang_masuk_edit'       => 'Edit Data Uang Masuk',
+                    'uang_masuk_delete'     => 'Hapus Data Uang Masuk',
+                ],
+                '📄 Modul Invoice' => [
+                    'invoice_index'         => 'Lihat Daftar Invoice',
+                    'invoice_create'        => 'Buat / Tambah Invoice Baru',
+                    'invoice_edit'          => 'Edit Invoice',
+                    'invoice_delete'        => 'Hapus Invoice',
+                    'invoice_print'         => 'Cetak / Print Invoice',
+                    'invoice_lunas'         => 'Tandai Lunas & Masuk Keuangan',
+                ],
+                '📦 Master Data Barang' => [
+                    'barang_index'          => 'Lihat Master Data Barang',
+                ]
             ];
         @endphp
 
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
-            @foreach($menus as $key => $label)
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 1rem; color: var(--text-primary);">
-                    <input type="checkbox" name="permissions[]" value="{{ $key }}" {{ in_array($key, $currentPerms) ? 'checked' : '' }} style="width: 18px; height: 18px;">
-                    {{ $label }}
-                </label>
+        <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 25px;">
+            @foreach($permissionGroups as $groupName => $permissions)
+                <div style="background: var(--bg-body); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <h4 style="margin: 0 0 10px 0; font-size: 1rem; color: var(--primary);">{{ $groupName }}</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                        @foreach($permissions as $key => $label)
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-primary);">
+                                <input type="checkbox" name="permissions[]" value="{{ $key }}" {{ in_array($key, $currentPerms) ? 'checked' : '' }} style="width: 16px; height: 16px;">
+                                {{ $label }}
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
             @endforeach
         </div>
 
         <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn btn-primary">💾 Simpan Perubahan</button>
+            <button type="submit" class="btn btn-primary">💾 Simpan Hak Akses</button>
             <a href="{{ route('users.index') }}" class="btn btn-secondary" style="text-decoration: none;">Kembali</a>
         </div>
     </form>

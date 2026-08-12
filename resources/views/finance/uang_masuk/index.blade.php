@@ -74,25 +74,38 @@
         }
     </style>
 
+    @php
+        $userPerms = Auth::user()->permissions ?? [];
+        $isAdmin = Auth::check() && Auth::user()->role == 'admin';
+        
+        // Izin aksi (Edit / Hapus / Tambah)
+        $canCreate = $isAdmin || in_array('uang_masuk_create', $userPerms);
+        $canEdit = $isAdmin || in_array('uang_masuk_edit', $userPerms);
+        $canDelete = $isAdmin || in_array('uang_masuk_delete', $userPerms);
+        $showActionColumn = $canEdit || $canDelete;
+    @endphp
+
     <!-- Header Atas (Judul & Tombol Tambah/Import) -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;">
         <h2 style="margin: 0; font-size: 1.5rem; color: var(--text-primary);">
             Data Uang Masuk - {{ strtoupper($kategori) }}
         </h2>
         
-        <!-- HANYA ADMIN YANG BISA LIHAT TOMBOL TAMBAH & IMPORT -->
-        @if(Auth::check() && Auth::user()->role == 'admin')
         <div style="display: flex; gap: 10px; align-items: center;">
-            <a href="{{ route('uang_masuk.create') }}" class="btn btn-success">+ Tambah Data</a>
+            {{-- Tombol Tambah Data (Muncul jika Admin atau punya izin create) --}}
+            @if($canCreate)
+                <a href="{{ route('uang_masuk.create') }}" class="btn btn-success">+ Tambah Data</a>
+            @endif
 
-            <!-- Form Import Excel -->
-            <form action="{{ route('uang_masuk.import') }}" method="POST" enctype="multipart/form-data" style="display: inline-flex; gap: 5px; align-items: center;">
-                @csrf
-                <input type="file" name="file_excel" required style="font-size: 0.85rem; background: var(--bg-card); color: var(--text-primary); padding: 4px; border: 1px solid var(--border-color); border-radius: 4px;">
-                <button type="submit" class="btn btn-secondary">Import Excel</button>
-            </form>
+            {{-- Form Import Excel (Khusus Admin) --}}
+            @if($isAdmin)
+                <form action="{{ route('uang_masuk.import') }}" method="POST" enctype="multipart/form-data" style="display: inline-flex; gap: 5px; align-items: center;">
+                    @csrf
+                    <input type="file" name="file_excel" required style="font-size: 0.85rem; background: var(--bg-card); color: var(--text-primary); padding: 4px; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <button type="submit" class="btn btn-secondary">Import Excel</button>
+                </form>
+            @endif
         </div>
-        @endif
     </div>
 
     @if(session('success'))
@@ -161,7 +174,7 @@
                             <th>INSTANSI</th>
                             <th>Rekening</th>
                             <th>Keterangan</th>
-                            @if(Auth::check() && Auth::user()->role == 'admin')
+                            @if($showActionColumn)
                                 <th style="padding: 12px; text-align: center;">Aksi</th>
                             @endif
                         </tr>
@@ -183,7 +196,7 @@
                             <th>Rekening</th>
                             <th>NO PENGEMBALIAN</th>
                             <th>SUDAH BUAT FAKTUR</th>
-                            @if(Auth::check() && Auth::user()->role == 'admin')
+                            @if($showActionColumn)
                                 <th style="text-align: center;">Aksi</th>
                             @endif
                         </tr>
@@ -212,15 +225,20 @@
                                 <td>{{ $row->rekening_tujuan ?? '-' }}</td>
                                 <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->keterangan ?? '-' }}</td>
 
-                                <!-- Tombol Aksi Swasta HANYA ADMIN -->
-                                @if(Auth::check() && Auth::user()->role == 'admin')
+                                <!-- Tombol Aksi Swasta -->
+                                @if($showActionColumn)
                                 <td style="text-align: center; white-space: nowrap;">
-                                    <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
-                                    <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
-                                    </form>
+                                    @if($canEdit)
+                                        <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
+                                    @endif
+
+                                    @if($canDelete)
+                                        <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
+                                        </form>
+                                    @endif
                                 </td>
                                 @endif
                             </tr>
@@ -254,15 +272,20 @@
                                 <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">{{ $row->status_pengembalian ?? '-' }}</td>
                                 <td style="text-align: center;">{{ $row->status_faktur ?? '-' }}</td>
 
-                                <!-- Tombol Aksi Pemerintah HANYA ADMIN -->
-                                @if(Auth::check() && Auth::user()->role == 'admin')
+                                <!-- Tombol Aksi Pemerintah -->
+                                @if($showActionColumn)
                                 <td style="text-align: center; white-space: nowrap;">
-                                    <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
-                                    <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
-                                    </form>
+                                    @if($canEdit)
+                                        <a href="{{ route('uang_masuk.edit', $row->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Edit</a>
+                                    @endif
+
+                                    @if($canDelete)
+                                        <form action="{{ route('uang_masuk.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Hapus</button>
+                                        </form>
+                                    @endif
                                 </td>
                                 @endif
                             </tr>
@@ -270,7 +293,7 @@
                     @empty
                         <!-- KONDISI JIKA DATA KOSONG -->
                         <tr>
-                            <td colspan="{{ $kategori == 'swasta' ? (Auth::check() && Auth::user()->role == 'admin' ? 11 : 10) : (Auth::check() && Auth::user()->role == 'admin' ? 16 : 15) }}" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                            <td colspan="{{ $kategori == 'swasta' ? ($showActionColumn ? 11 : 10) : ($showActionColumn ? 16 : 15) }}" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
                                 Belum ada data uang masuk untuk kategori {{ strtoupper($kategori) }}.
                             </td>
                         </tr>

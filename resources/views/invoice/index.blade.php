@@ -454,7 +454,6 @@
         margin-top: 18px;
     }
 
-    /* ===== Mobile: table collapses into stacked cards ===== */
     @media (max-width: 720px) {
         .invoice-card {
             padding: 16px;
@@ -525,6 +524,10 @@
     }
 </style>
 
+@php
+    $userPerms = Auth::user()->permissions ?? [];
+@endphp
+
 <div class="invoice-wrap">
     <div class="invoice-card">
         <div class="invoice-header">
@@ -532,7 +535,9 @@
                 <h3>Data Invoice Penjualan</h3>
                 <p>Kelola invoice, status pembayaran, dan pelunasan</p>
             </div>
-            <a href="{{ route('invoice.create') }}" class="btn-add">+ Buat Invoice Baru</a>
+            @if(Auth::user()->role == 'admin' || in_array('invoice_create', $userPerms))
+                <a href="{{ route('invoice.create') }}" class="btn-add">+ Buat Invoice Baru</a>
+            @endif
         </div>
 
         @if(session('success'))
@@ -603,12 +608,12 @@
                 <tbody>
                     @forelse($invoices as $index => $inv)
                         <tr>
-                            <td class="no-cell" data-label="No">{{ $index + 1 }}</td>
+                            <td class="no-cell" data-label="No">{{ $invoices->firstItem() + $index }}</td>
                             <td data-label="No Invoice"><span class="no-invoice-badge">{{ $inv->no_invoice }}</span></td>
                             <td data-label="Tanggal">{{ date('d M Y', strtotime($inv->tanggal)) }}</td>
                             <td class="pelanggan-name" data-label="Pelanggan">{{ $inv->nama_pelanggan }}</td>
                             <td class="grand-total" data-label="Grand Total">Rp {{ number_format($inv->grand_total, 0, ',', '.') }}</td>
-                            <td data-label="Status">
+                            <td data-label="Status" style="text-align: center;">
                                 @if($inv->status_pembayaran == 'Lunas')
                                     <span class="status-badge status-lunas">LUNAS</span>
                                 @else
@@ -618,11 +623,18 @@
 
                             <td class="aksi-cell" data-label="Aksi">
                                 <div class="action-group">
-                                    <a href="{{ route('invoice.print', $inv->id) }}" target="_blank" class="btn-action btn-cetak">Cetak</a>
+                                    {{-- Tombol Cetak --}}
+                                    @if(Auth::user()->role == 'admin' || in_array('invoice_print', $userPerms))
+                                        <a href="{{ route('invoice.print', $inv->id) }}" class="btn-action btn-cetak" target="_blank">Cetak</a>
+                                    @endif
 
                                     @if($inv->status_pembayaran != 'Lunas')
-                                        <a href="{{ route('invoice.edit', $inv->id) }}" class="btn-action btn-edit">Edit</a>
+                                        {{-- Tombol Edit --}}
+                                        @if(Auth::user()->role == 'admin' || in_array('invoice_edit', $userPerms))
+                                            <a href="{{ route('invoice.edit', $inv->id) }}" class="btn-action btn-edit">Edit</a>
+                                        @endif
 
+                                        {{-- Tombol Dropdown Lunas --}}
                                         <div class="dropdown-wrap">
                                             <button type="button" onclick="toggleDropdown({{ $inv->id }})" class="btn-action btn-lunas">
                                                 Lunas &#9662;
@@ -639,12 +651,15 @@
                                                 </form>
                                                 <form action="{{ route('invoice.lunas', [$inv->id, 'hanya_status']) }}" method="POST" onsubmit="return confirm('Yakin invoice ini di Tandai sebagai LUNAS? Invoice tidak bisa di delete jika Status LUNAS');">
                                                     @csrf
-                                                    <button type="submit" class="dropdown-item hanya_status">Lunas Aja</button>
+                                                    <button type="submit" class="dropdown-item">Lunas Aja</button>
                                                 </form>
                                             </div>
                                         </div>
+                                    @endif
 
-                                        <form action="{{ route('invoice.destroy', $inv->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus Invoice ini permanen?');" style="display:inline-block;">
+                                    {{-- Tombol Hapus --}}
+                                    @if(Auth::user()->role == 'admin' || in_array('invoice_delete', $userPerms))
+                                        <form action="{{ route('invoice.destroy', $inv->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus invoice ini?')">
                                             @csrf
                                             <button type="submit" class="btn-action btn-delete">Hapus</button>
                                         </form>
@@ -667,7 +682,7 @@
         </div>
 
         <div class="pagination-wrap">
-            {{ $invoices->links() }}
+            {{ $invoices->appends(request()->query())->links() }}
         </div>
     </div>
 </div>
