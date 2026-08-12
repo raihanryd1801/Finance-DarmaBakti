@@ -42,10 +42,10 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
-        // Mulai query
+        $this->cekAkses('invoice_index'); // 🔒 PASANG GEMBOK
+
         $query = Invoice::query();
 
-        // 1. Filter Pencarian (No Invoice atau Nama Pelanggan)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -54,25 +54,23 @@ class InvoiceController extends Controller
             });
         }
 
-        // 2. Filter Bulan
         if ($request->filled('bulan')) {
             $query->whereMonth('tanggal', $request->bulan);
         }
 
-        // 3. Filter Tahun
         if ($request->filled('tahun')) {
             $query->whereYear('tanggal', $request->tahun);
         }
 
-        // Eksekusi query dengan pagination & pertahankan parameter filter di URL (withQueryString)
         $invoices = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         return view('invoice.index', compact('invoices'));
     }
 
-    // --- FUNGSI TAMPILKAN FORM BUAT INVOICE ---
     public function create()
     {
+        $this->cekAkses('invoice_create'); // 🔒 PASANG GEMBOK
+
         $bulan = date('m');
         $tahun = date('y');
         $lastInvoice = Invoice::whereMonth('tanggal', date('m'))->whereYear('tanggal', date('Y'))->count();
@@ -87,7 +85,8 @@ class InvoiceController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi Input (Termasuk rekening_id)
+        $this->cekAkses('invoice_create'); // 🔒 PASANG GEMBOK
+
         $request->validate([
             'no_invoice'     => 'required|unique:invoices',
             'tanggal'        => 'required|date',
@@ -98,20 +97,15 @@ class InvoiceController extends Controller
 
         DB::beginTransaction();
         try {
-            // Hitung Subtotal dari baris barang
             $subtotal = 0;
             foreach ($request->items as $item) {
                 $subtotal += ($item['qty'] * $item['harga']);
             }
 
-            // Hitung PPN jika dicentang
             $ppn = $request->has('pakai_ppn') ? ($subtotal * 0.11) : 0;
             $grand_total = $subtotal + $ppn;
-
-            // Generate Terbilang
             $teks_terbilang = trim($this->terbilang($grand_total)) . " Rupiah";
 
-            // 2. Simpan Header Invoice
             $invoice = Invoice::create([
                 'no_invoice'       => $request->no_invoice,
                 'tanggal'          => $request->tanggal,
@@ -125,7 +119,6 @@ class InvoiceController extends Controller
                 'terbilang'        => $teks_terbilang,
             ]);
 
-            // 3. Simpan Detail Barang
             foreach ($request->items as $item) {
                 InvoiceItem::create([
                     'invoice_id'  => $invoice->id,
@@ -148,12 +141,16 @@ class InvoiceController extends Controller
 
     public function print($id)
     {
+        $this->cekAkses('invoice_print'); // 🔒 PASANG GEMBOK
+
         $invoice = Invoice::with(['items', 'rekening'])->findOrFail($id);
         return view('invoice.print', compact('invoice'));
     }
 
     public function tandaiLunas($id, $kategori)
     {
+        $this->cekAkses('invoice_lunas'); // 🔒 PASANG GEMBOK
+
         $invoice = Invoice::with('rekening')->findOrFail($id);
 
         if ($invoice->status_pembayaran == 'Lunas') {
@@ -170,27 +167,31 @@ class InvoiceController extends Controller
             // 2. Jika pilih "Hanya Lunas", lewati pembuatan data Uang Masuk
             if ($kategori == 'hanya_status') {
                 DB::commit();
-                return back()->with('success', 'Status Invoice berhasil diubah jadi LUNAS (Keuangan tidak diubah karena sudah tercatat sebelumnya).');
+                return back()->with('success', 'Status Invoice berhasil diubah jadi LUNAS.');
             }
 
-            // 3. Logika Penghitungan
+            // 3. Logika Penghitungan Sesuai Update Baru (UangMasukController)
             if ($kategori == 'pemerintah') {
-                $includePpn = $invoice->grand_total;
-                $excludePpn = $includePpn / 1.11;
-                $ppn = $includePpn - $excludePpn;
-                $pph22 = $excludePpn * 0.015;
-                $totalDiterima = $excludePpn - $pph22;
-                $totalRekeningKoran = $totalDiterima;
+                // RUMUS PEMERINTAH (Hitung Mundur dari Total Invoice yang Masuk / 0.985)
+                $nominalTransfer     = $invoice->grand_total;
+                $excludePpn          = $nominalTransfer / 0.985;
+                $pph22               = $excludePpn * 0.015;
+                $ppn                 = $excludePpn * 0.11;
+                $includePpn          = $excludePpn + $ppn;
+                
+                $totalDiterima       = $excludePpn - $pph22;
+                $totalRekeningKoran  = $totalDiterima; 
             } else {
-                $includePpn = $invoice->grand_total;
-                $excludePpn = $invoice->subtotal;
-                $ppn = $invoice->ppn;
-                $pph22 = 0;
-                $totalDiterima = $invoice->grand_total;
-                $totalRekeningKoran = $invoice->grand_total;
+                // RUMUS SWASTA
+                $includePpn          = $invoice->grand_total;
+                $excludePpn          = $invoice->subtotal;
+                $ppn                 = $invoice->ppn;
+                $pph22               = 0;
+                $totalDiterima       = $invoice->grand_total;
+                $totalRekeningKoran  = $invoice->grand_total;
             }
 
-            // Ambil Atas Nama rekening dari relasi (fallback ke 'DARMA' jika tidak ada)
+            // Ambil Atas Nama rekening
             $namaRekening = $invoice->rekening ? $invoice->rekening->atas_nama : 'DARMA';
 
             // 4. Insert otomatis ke tabel Uang Masuk
@@ -209,7 +210,7 @@ class InvoiceController extends Controller
                 'total_diterima'       => $totalDiterima,
                 'total_rekening_koran' => $totalRekeningKoran,
                 'nilai_nota'           => $invoice->grand_total,
-                'selisih'              => 0,
+                'selisih'              => 0, 
             ]);
 
             DB::commit();
@@ -222,6 +223,8 @@ class InvoiceController extends Controller
 
     public function edit($id)
     {
+        $this->cekAkses('invoice_edit'); // 🔒 PASANG GEMBOK
+
         $invoice = Invoice::with('items')->findOrFail($id);
         if ($invoice->status_pembayaran == 'Lunas') {
             return redirect()->route('invoice.index')->with('error', 'Akses ditolak! Invoice yang sudah lunas tidak dapat diedit.');
@@ -235,6 +238,8 @@ class InvoiceController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->cekAkses('invoice_edit'); // 🔒 PASANG GEMBOK
+
         $invoice = Invoice::findOrFail($id);
 
         if ($invoice->status_pembayaran == 'Lunas') {
@@ -259,7 +264,6 @@ class InvoiceController extends Controller
             $grand_total = $subtotal + $ppn;
             $teks_terbilang = trim($this->terbilang($grand_total)) . " Rupiah";
 
-            // 1. Update Header
             $invoice->update([
                 'tanggal'          => $request->tanggal,
                 'nama_pelanggan'   => $request->nama_pelanggan,
@@ -272,10 +276,8 @@ class InvoiceController extends Controller
                 'terbilang'        => $teks_terbilang,
             ]);
 
-            // 2. Hapus detail barang yang lama
             InvoiceItem::where('invoice_id', $invoice->id)->delete();
 
-            // 3. Masukkan detail barang yang baru
             foreach ($request->items as $item) {
                 InvoiceItem::create([
                     'invoice_id'  => $invoice->id,
@@ -297,6 +299,8 @@ class InvoiceController extends Controller
 
     public function destroy($id)
     {
+        $this->cekAkses('invoice_delete'); // 🔒 PASANG GEMBOK
+        
         $invoice = Invoice::findOrFail($id);
         
         if ($invoice->status_pembayaran == 'Lunas') {

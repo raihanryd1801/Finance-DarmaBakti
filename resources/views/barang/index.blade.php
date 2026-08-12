@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@php
+    $isAdmin = Auth::check() && Auth::user()->role == 'admin';
+@endphp
 
 @section('content')
 <style>
@@ -302,7 +305,9 @@
                 <h3>Master Data Barang</h3>
                 <p>Kelola daftar barang, harga, dan satuan</p>
             </div>
-            <a href="{{ route('barang.create') }}" class="btn-add">+ Tambah Barang</a>
+            @if($isAdmin)
+    <a href="{{ route('barang.create') }}" class="btn btn-success">+ Tambah Data Barang</a>
+@endif
         </div>
 
         @if(session('success'))
@@ -319,39 +324,47 @@
                         <th>Satuan</th>
                         <th>Harga</th>
                         <th>Keterangan</th>
-                        <th style="text-align: center;">Aksi</th>
+                        @if($isAdmin)
+        <th style="text-align: center;">Aksi</th>
+    @endif
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($barangs as $index => $item)
-                        <tr>
-                            <td class="no-cell" data-label="No">{{ $index + 1 }}</td>
-                            <td data-label="Kode"><span class="kode-badge">{{ $item->kode_barang }}</span></td>
-                            <td class="nama-barang" data-label="Nama Barang">{{ $item->nama_barang }}</td>
-                            <td data-label="Satuan">{{ $item->satuan }}</td>
-                            <td class="harga-value" data-label="Harga">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                            <td class="keterangan-text" data-label="Keterangan">{{ $item->keterangan ?? '-' }}</td>
-                            <td class="aksi-cell" data-label="Aksi">
-                                <div class="action-group">
-                                    <a href="{{ route('barang.edit', $item->id) }}" class="btn-action btn-edit">Edit</a>
-                                    <form action="{{ route('barang.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus barang ini?');">
-                                        @csrf
-                                        <button type="submit" class="btn-action btn-delete">Hapus</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7">
-                                <div class="empty-state">
-                                    <div class="empty-title">Belum ada data barang</div>
-                                    <div>Klik "Tambah Barang" untuk menambahkan data pertama.</div>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
+    @forelse($barangs as $index => $item)
+        <tr>
+            <td class="no-cell" data-label="No">{{ $barangs->firstItem() + $index }}</td>
+            <td data-label="Kode"><span class="kode-badge">{{ $item->kode_barang }}</span></td>
+            <td class="nama-barang" data-label="Nama Barang">{{ $item->nama_barang }}</td>
+            <td data-label="Satuan">{{ $item->satuan }}</td>
+            <td class="harga-value" data-label="Harga">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
+            <td class="keterangan-text" data-label="Keterangan">{{ $item->keterangan ?? '-' }}</td>
+            
+            <!-- Tampilkan kolom Aksi HANYA untuk Admin -->
+            @if($isAdmin)
+            <td class="aksi-cell" data-label="Aksi">
+                <div class="action-group">
+                    <a href="{{ route('barang.edit', $item->id) }}" class="btn-action btn-edit">Edit</a>
+                    <form action="{{ route('barang.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus barang ini?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-action btn-delete">Hapus</button>
+                    </form>
+                </div>
+            </td>
+            @endif
+        </tr>
+    @empty
+        <tr>
+            <!-- Colspan otomatis menyesuaikan jumlah kolom (7 untuk Admin, 6 untuk Viewer) -->
+            <td colspan="{{ $isAdmin ? 7 : 6 }}">
+                <div class="empty-state">
+                    <div class="empty-title">Belum ada data barang</div>
+                    <div>Klik "Tambah Barang" untuk menambahkan data pertama.</div>
+                </div>
+            </td>
+        </tr>
+    @endforelse
+</tbody>
             </table>
         </div>
 

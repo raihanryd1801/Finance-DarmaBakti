@@ -49,11 +49,11 @@ Route::middleware(['auth'])->group(function () {
 
     // --- MODULE MASTER DATA BARANG ---
     Route::get('/darmapp/barang', [App\Http\Controllers\BarangController::class, 'index'])->name('barang.index');
-    Route::get('/darmapp//create', [App\Http\Controllers\BarangController::class, 'create'])->name('barang.create');
+    Route::get('/darmapp/barang/create', [App\Http\Controllers\BarangController::class, 'create'])->name('barang.create');
     Route::post('/darmapp/store', [App\Http\Controllers\BarangController::class, 'store'])->name('barang.store');
-    Route::get('/darmapp//{id}/edit', [App\Http\Controllers\BarangController::class, 'edit'])->name('barang.edit');
-    Route::post('/darmapp//{id}/update', [App\Http\Controllers\BarangController::class, 'update'])->name('barang.update');
-    Route::post('/darmapp//{id}/destroy', [App\Http\Controllers\BarangController::class, 'destroy'])->name('barang.destroy');
+    Route::get('/darmapp/barang/{id}/edit', [App\Http\Controllers\BarangController::class, 'edit'])->name('barang.edit');
+    Route::post('/darmapp/barang/{id}/update', [App\Http\Controllers\BarangController::class, 'update'])->name('barang.update');
+    Route::post('/darmapp/barang/{id}/destroy', [App\Http\Controllers\BarangController::class, 'destroy'])->name('barang.destroy');
 
     // --- MODULE MASTER DATA REKENING ---
     Route::get('/darmapp/rekening', [App\Http\Controllers\RekeningController::class, 'index'])->name('rekening.index');

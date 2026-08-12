@@ -39,12 +39,15 @@ class UangMasukController extends Controller
     // --- METHOD CREATE ---
     public function create()
     {
+        $this->cekAkses('uang_masuk_create'); // 🔒 PASANG GEMBOK
         return view('finance.uang_masuk.create');
     }
 
     // --- METHOD STORE ---
     public function store(Request $request)
+    
     {
+        $this->cekAkses('uang_masuk_create'); // 🔒 PASANG GEMBOK
         // 1. Bersihkan Input dari Rp, Titik, dan Spasi
         $nominal      = (float) preg_replace('/[^0-9]/', '', $request->jumlah_nominal_input ?? '0');
         $biaya_admin  = (float) preg_replace('/[^0-9]/', '', $request->biaya_admin ?? '0');
@@ -127,6 +130,7 @@ class UangMasukController extends Controller
     // --- METHOD IMPORT ---
     public function import(Request $request)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh melakukan Import Excel!');
         $request->validate([
             'file_excel' => 'required|mimes:xlsx,xls,csv'
         ]);
@@ -183,7 +187,9 @@ class UangMasukController extends Controller
 
     // --- METHOD EDIT ---
     public function edit($id)
+    
     {
+        $this->cekAkses('uang_masuk_edit'); // 🔒 PASANG GEMBOK
         $data = UangMasuk::findOrFail($id);
         return view('finance.uang_masuk.edit', compact('data'));
     }
@@ -191,6 +197,7 @@ class UangMasukController extends Controller
     // --- METHOD UPDATE ---
     public function update(Request $request, $id)
     {
+        $this->cekAkses('uang_masuk_edit'); // 🔒 PASANG GEMBOK 
         $uangMasuk = UangMasuk::findOrFail($id);
 
         // 1. Bersihkan Input dari Rp, Titik, dan Spasi
@@ -202,7 +209,6 @@ class UangMasukController extends Controller
 
         // 2. LOGIKA PERHITUNGAN BERDASARKAN KATEGORI
         if ($request->kategori == 'pemerintah') {
-            // RUMUS PEMERINTAH (Hitung Mundur / 0.985)
             if ($request->has('potong_pph')) {
                 $exclude_ppn = $nominal / 0.985;
                 $pph_22      = $exclude_ppn * 0.015;
@@ -219,7 +225,6 @@ class UangMasukController extends Controller
                 $include_ppn = $exclude_ppn;
             }
         } else {
-            // RUMUS SWASTA (Normal / 1.11)
             if ($request->has('potong_ppn')) {
                 $include_ppn = $nominal;
                 $exclude_ppn = $include_ppn / 1.11;
@@ -275,6 +280,7 @@ class UangMasukController extends Controller
     // --- METHOD DELETE ---
     public function destroy($id)
     {
+        $this->cekAkses('uang_masuk_delete');
         $uangMasuk = UangMasuk::findOrFail($id);
         $kategori = $uangMasuk->kategori; 
         
