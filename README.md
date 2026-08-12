@@ -7,64 +7,138 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-💼 Darmabakti Application
+Sistem Manajemen Keuangan - DARMABAKTI
 
-Sistem Manajemen Keuangan & Administrasi berbasis Laravel
+Aplikasi berbasis Laravel untuk membantu pengelolaan keuangan dan administrasi perusahaan. Aplikasi mencakup pencatatan Uang Masuk, pembuatan Invoice, pengelolaan Rekening, Master Barang, User Management, serta laporan keuangan.
 
-Darmabakti merupakan aplikasi berbasis web yang dirancang untuk membantu pengelolaan administrasi dan keuangan secara lebih terstruktur, mulai dari Uang Masuk, Invoice, Rekening, hingga User Management.
+Tampilan Aplikasi
 
-✨ Fitur Utama
+Halaman
 
-Modul
+Dokumentasi
 
-Keterangan
+Dashboard Report
 
-💰 Uang Masuk
+Uang Masuk
 
-Pencatatan dan pengelolaan transaksi uang masuk
+Tambah Uang Masuk
 
-🧾 Invoice
+Report Uang Masuk
 
-Membuat, mengelola, dan mencetak invoice
+Invoice
 
-🏦 Rekening
+Cetak Invoice
 
-Pengelolaan data rekening
+Invoice PDF
 
-📊 Dashboard
+Daftar Rekening
 
-Ringkasan dan monitoring data keuangan
+User Management
 
-👥 User Management
+Edit User
 
-Pengelolaan pengguna aplikasi
+Darmabakti
 
-📄 Invoice PDF
+Aplikasi manajemen keuangan berbasis Laravel yang digunakan untuk mencatat dan mengelola transaksi keuangan, invoice, rekening, barang, serta pengguna aplikasi.
 
-Preview dan pembuatan invoice dalam format PDF
+Aplikasi ini dirancang untuk membantu proses administrasi menjadi lebih terstruktur dan memudahkan monitoring data keuangan melalui dashboard dan laporan.
 
-🔐 Authentication
+Fitur
 
-Sistem login dan pengelolaan akses pengguna
+Uang Masuk
 
-🛠️ Teknologi
+Mencatat transaksi uang masuk
 
-<p>
-<img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white">
-<img src="https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=for-the-badge&logo=php&logoColor=white">
-<img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-<img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
-<img src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white">
-</p>
+Menampilkan data transaksi
 
-🚀 Instalasi
+Edit dan hapus transaksi
+
+Import data menggunakan Excel
+
+Filter dan laporan transaksi
+
+Laporan Keuangan
+
+Dashboard laporan
+
+Rekap data uang masuk
+
+Monitoring transaksi berdasarkan data keuangan
+
+Invoice
+
+Membuat invoice baru
+
+Mengelola data invoice
+
+Edit invoice
+
+Hapus invoice
+
+Menandai invoice sebagai lunas
+
+Mencetak invoice
+
+Membuat invoice dalam format PDF
+
+Master Data
+
+Master Barang
+
+Master Rekening
+
+Data pelanggan pada transaksi invoice
+
+User Management
+
+Menambahkan user
+
+Mengubah user
+
+Menghapus user
+
+Pengaturan role user
+
+Authentication dan logout
+
+Dokumen
+
+Menampilkan data dokumen dari API
+
+Preview dokumen
+
+Download dokumen
+
+Import Data
+
+Import transaksi Uang Masuk dari Excel
+
+Mendukung import berdasarkan jenis data Pemerintah dan Swasta
+
+Teknologi
+
+Laravel 13
+
+PHP 8.3+
+
+MySQL / MariaDB
+
+Blade
+
+Tailwind CSS
+
+Vite
+
+Laravel Excel (Maatwebsite)
+
+Instalasi
 
 1. Clone Repository
 
-git clone <url-repository>
+git clone https://github.com/raihanryd1801/darmabakti.git
 cd darmabakti
 
-2. Install Dependencies
+2. Install Dependency
 
 Install dependency Laravel:
 
@@ -78,34 +152,53 @@ Build asset:
 
 npm run build
 
-3. Konfigurasi Environment
+3. Copy File Environment
 
-⚠️ Penting: Jangan pernah melakukan commit atau push file .env ke repository GitHub karena dapat berisi password database, API key, dan konfigurasi sensitif lainnya.
-
-Salin file environment:
+Linux:
 
 cp .env.example .env
 
-Kemudian sesuaikan konfigurasi database pada .env:
+Windows:
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nama_database_anda
-DB_USERNAME=root
-DB_PASSWORD=
+copy .env.example .env
 
 4. Generate Application Key
 
 php artisan key:generate
 
-5. Setup Database
+5. Konfigurasi Database
 
-Pastikan database sudah dibuat, kemudian jalankan migration:
+Sesuaikan file .env dengan database yang digunakan.
+
+Contoh:
+
+APP_NAME=Darmabakti
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=darmabakti
+DB_USERNAME=root
+DB_PASSWORD=
+
+Jangan melakukan commit atau push file .env ke GitHub karena file tersebut dapat berisi credential database dan konfigurasi sensitif.
+
+6. Jalankan Migration
 
 php artisan migrate
 
-6. Jalankan Aplikasi
+Jika database ingin dibuat ulang dari awal:
+
+php artisan migrate:fresh
+
+Gunakan migrate:fresh hanya pada environment development karena seluruh tabel akan dihapus.
+
+7. Jalankan Aplikasi
+
+Untuk development:
 
 php artisan serve
 
@@ -113,38 +206,63 @@ Aplikasi dapat diakses melalui:
 
 http://127.0.0.1:8000
 
-🖥️ Tampilan Aplikasi
+Jika ingin menjalankan Vite saat development:
 
-📊 Dashboard
+npm run dev
 
-💰 Uang Masuk
+Membuat User Admin
 
-➕ Tambah Uang Masuk
+Gunakan Laravel Tinker:
 
-📈 Report Uang Masuk
+php artisan tinker
 
-🧾 Invoice
+Kemudian:
 
-🖨️ Cetak Invoice
+App\Models\User::create([
+'name' => 'Administrator',
+'email' => 'admin@example.com',
+'password' => bcrypt('password'),
+'role' => 'admin'
+]);
 
-📄 Invoice PDF
+Keluar dari Tinker:
 
-🏦 Daftar Rekening
+exit
 
-👥 User Management
+Gunakan password yang aman untuk environment production.
 
-✏️ Edit User
-
-📁 Struktur Project
+Struktur Folder
 
 darmabakti/
 ├── app/
-├── bootstrap/
-├── config/
+│ ├── Http/
+│ │ ├── Controllers/
+│ │ │ ├── AuthController.php
+│ │ │ ├── BarangController.php
+│ │ │ ├── DokumenApiController.php
+│ │ │ ├── InvoiceController.php
+│ │ │ ├── RekeningController.php
+│ │ │ ├── UangMasukController.php
+│ │ │ └── UserController.php
+│ │ ├── Middleware/
+│ │ └── ...
+│ ├── Imports/
+│ └── Models/
+│
 ├── database/
+│ ├── factories/
+│ ├── migrations/
+│ └── seeders/
+│
 ├── public/
+│
 ├── resources/
+│ └── views/
+│
 ├── routes/
+│ ├── web.php
+│ └── console.php
+│
 ├── storage/
 ├── tests/
 ├── .env.example
@@ -153,13 +271,109 @@ darmabakti/
 ├── package.json
 └── README.md
 
-⚙️ Perintah Laravel
+Cara Penggunaan
 
-Clear seluruh cache:
+Login menggunakan akun yang telah dibuat.
+
+Gunakan menu Uang Masuk untuk mencatat transaksi.
+
+Gunakan fitur import apabila ingin memasukkan data dari Excel.
+
+Gunakan Dashboard Report untuk melihat ringkasan keuangan.
+
+Gunakan menu Invoice untuk membuat dan mengelola invoice.
+
+Tandai invoice sebagai lunas setelah pembayaran diterima.
+
+Gunakan menu Rekening untuk mengelola data rekening.
+
+Gunakan menu Barang untuk mengelola master barang.
+
+Gunakan User Management untuk mengelola pengguna aplikasi.
+
+Gunakan menu Dokumen API untuk preview atau download dokumen yang tersedia.
+
+Dependensi
+
+Dependency utama yang digunakan:
+
+Laravel Framework 13
+PHP 8.3+
+Laravel Tinker
+Maatwebsite Laravel Excel
+MySQL / MariaDB
+Node.js
+NPM
+Vite
+Tailwind CSS
+
+Untuk melihat dependency lengkap:
+
+composer show
+
+dan:
+
+npm list
+
+Deployment Production
+
+Untuk deployment pada server Linux:
+
+composer install --no-dev --optimize-autoloader
+
+Kemudian:
+
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+Build frontend:
+
+npm install
+npm run build
+
+Buat symbolic link storage:
+
+php artisan storage:link
+
+Document root web server harus diarahkan ke:
+
+/var/www/html/darmabakti/public
+
+Jangan mengarahkan document root ke folder utama project Laravel.
+
+Pastikan permission folder berikut sesuai:
+
+storage/
+bootstrap/cache/
+
+Konfigurasi Production
+
+Pada production, ubah konfigurasi .env:
+
+APP_ENV=production
+APP_DEBUG=false
+
+Gunakan:
+
+Password database yang kuat
+
+HTTPS
+
+Credential database yang aman
+
+Access control pada database
+
+Backup database secara berkala
+
+Perintah Laravel yang Berguna
+
+Clear cache:
 
 php artisan optimize:clear
 
-Melihat daftar route:
+Melihat route:
 
 php artisan route:list
 
@@ -167,7 +381,7 @@ Melihat status migration:
 
 php artisan migrate:status
 
-Masuk ke Laravel Tinker:
+Masuk Tinker:
 
 php artisan tinker
 
@@ -175,62 +389,49 @@ Menjalankan test:
 
 php artisan test
 
-🔒 Security
+Troubleshooting
 
-Sebelum aplikasi digunakan pada production, pastikan:
+Jika aplikasi mengalami masalah cache atau konfigurasi:
 
-.env tidak masuk repository
+php artisan optimize:clear
 
-APP_DEBUG=false
+Jika migration bermasalah, periksa:
 
-Password database menggunakan credential yang aman
+php artisan migrate:status
 
-Gunakan HTTPS
+Jika terjadi masalah permission pada Linux:
 
-Gunakan password administrator yang kuat
+storage/
+bootstrap/cache/
 
-Batasi akses database
+Pastikan kedua folder tersebut dapat ditulis oleh user web server.
 
-Jangan menyimpan API key atau credential sensitif di source code
+Log Laravel dapat diperiksa pada:
 
-Untuk production:
+storage/logs/laravel.log
 
-APP_ENV=production
-APP_DEBUG=false
+Catatan
 
-📌 Production Deployment
+Pastikan environment yang digunakan memenuhi requirement project:
 
-Setelah aplikasi dipasang pada server production:
+PHP : 8.3+
+Laravel : 13
+Database : MySQL / MariaDB
+Node.js : 20.19+ atau 22 LTS
+Composer : 2.x
 
-composer install --no-dev --optimize-autoloader
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-npm install
-npm run build
-php artisan storage:link
+Jangan memasukkan file .env, password database, API key, atau credential lainnya ke repository GitHub.
 
-Web server harus diarahkan ke:
+Lisensi
 
-/var/www/html/darmabakti/public
+Hak cipta © Darmabakti.
 
-Jangan mengarahkan document root ke folder utama project Laravel. Gunakan folder public.
+Aplikasi ini ditujukan untuk penggunaan internal perusahaan.
 
-👨‍💻 Development
+Bantuan
 
-Untuk development dengan Vite:
+Apabila mengalami kendala, periksa log aplikasi pada:
 
-npm run dev
+storage/logs/laravel.log
 
-Kemudian jalankan Laravel:
-
-php artisan serve
-
-📄 License
-
-Project ini menggunakan lisensi MIT.
-
-<p align="center">
-  Made with ❤️ using Laravel
-</p>
+atau hubungi administrator sistem.
