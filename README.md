@@ -16,7 +16,7 @@ Aplikasi berbasis Laravel untuk membantu pengelolaan keuangan dan administrasi p
 | Halaman                           | Dokumentasi                                                                                                                |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Dashboard Report                  | ![Dashboard Report](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/dashboardreport.png)  |
-| Uang Masuk Swasta                 | ![Uang Masuk Swasta](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)            |
+| Uang Masuk Swasta                 | ![Uang Masuk Swasta](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasuks.png)      |
 | Uang Masuk Pemerintah             | ![Uang Masuk Pemerintah](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasukp.png)  |
 | Tambah Uang Masuk                 | ![Tambah Uang Masuk](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/tambahuangmasuk.png) |
 | Data Barang                       | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/databarang.png)                |
