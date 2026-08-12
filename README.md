@@ -7,7 +7,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Sistem Manajemen Keuangan - DARMABAKTI
+## Sistem Manajemen Keuangan - Konveksi
 
 Aplikasi berbasis Laravel untuk membantu pengelolaan keuangan dan administrasi perusahaan. Aplikasi mencakup pencatatan Uang Masuk, pembuatan Invoice, pengelolaan Rekening, Master Barang, User Management, serta laporan keuangan.
 
@@ -16,12 +16,12 @@ Aplikasi berbasis Laravel untuk membantu pengelolaan keuangan dan administrasi p
 | Halaman               | Dokumentasi                                                                                                               |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Dashboard Report      | ![Dashboard Report](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/dashboardreport.png) |
-| Uang Masuk            | ![Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)                  |
-| Tambah Uang Masuk     | ![Tambah Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/tambahuangmasuk.png)      |
+| Uang Masuk Swasta     | ![Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasuks.png)                  |
+| Uang Masuk Pemerintah | ![Tambah Uang Masuk](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasukp.png)     |
 | Report Uang Masuk     | ![Report Uang Masuk](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/uangmasukp.png)           |
-| Uang Masuk Pemerintah | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasukp.png)               |
-| Cetak Invoice         | ![Cetak Invoice](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/cetakinvoice.png)             |
-| Invoice PDF           | ![Invoice PDF](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/invoicepdf.jpeg)                |
+| Tambah Uang Masuk     | ![Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/uangmasukp.png)               |
+| Cetak Invoice         | ![Cetak Invoice](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/cetakinvoice.png)       |
+| Invoice PDF           | ![Invoice PDF](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/invoicepdf.jpeg)          |
 | Daftar Rekening       | ![Daftar Rekening](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/daftarrek.jpeg)       |
 | User Management       | ![User Management](https://github.com/raihanryd1801/Finance-DarmaBakti/blob/main/public/screenshots/usermanagement.png)   |
 | Edit User             | ![Edit User](https://raw.githubusercontent.com/raihanryd1801/darmabakti/main/Screenshot/edituser.png)                     |
