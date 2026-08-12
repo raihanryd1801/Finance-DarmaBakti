@@ -115,6 +115,145 @@
         transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+        background: var(--table-header-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 20px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .filter-bar form {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .filter-group label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+    }
+
+    .filter-search-wrap {
+        position: relative;
+    }
+
+    .filter-search-wrap svg {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 15px;
+        height: 15px;
+        stroke: var(--text-muted);
+        fill: none;
+        stroke-width: 2;
+        pointer-events: none;
+    }
+
+    .filter-search-wrap input {
+        padding-left: 32px !important;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 13px;
+        font-family: inherit;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-filter-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .btn-filter-submit:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-filter-submit svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+    }
+
+    .btn-filter-reset {
+        display: inline-flex;
+        align-items: center;
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 9px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s ease, color 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .btn-filter-reset:hover {
+        background: var(--table-hover-bg);
+        color: var(--text);
+    }
+
+    @media (max-width: 640px) {
+        .filter-bar form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .filter-group,
+        .filter-actions {
+            width: 100%;
+        }
+        .filter-actions {
+            justify-content: flex-end;
+        }
+    }
+
     .invoice-table-container {
         overflow-x: auto;
         border-radius: 10px;
@@ -400,6 +539,54 @@
             <div class="alert-success">{{ session('success') }}</div>
         @endif
 
+        <!-- ===== FILTER: Pencarian, Bulan, Tahun ===== -->
+        <div class="filter-bar">
+            <form action="{{ route('invoice.index') }}" method="GET">
+                <div class="filter-group" style="flex: 1; min-width: 220px;">
+                    <label>Pencarian</label>
+                    <div class="filter-search-wrap">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3" stroke-linecap="round"/></svg>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari No Invoice atau Nama Pelanggan..." style="width: 100%; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div class="filter-group" style="min-width: 150px;">
+                    <label>Bulan</label>
+                    <select name="bulan">
+                        <option value="">-- Semua Bulan --</option>
+                        @php
+                            $namaBulan = ['01'=>'Januari', '02'=>'Februari', '03'=>'Maret', '04'=>'April', '05'=>'Mei', '06'=>'Juni', '07'=>'Juli', '08'=>'Agustus', '09'=>'September', '10'=>'Oktober', '11'=>'November', '12'=>'Desember'];
+                        @endphp
+                        @foreach($namaBulan as $angka => $nama)
+                            <option value="{{ $angka }}" {{ request('bulan') == $angka ? 'selected' : '' }}>
+                                {{ $nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="filter-group" style="min-width: 120px;">
+                    <label>Tahun</label>
+                    <select name="tahun">
+                        <option value="">-- Semua --</option>
+                        @for($i = 2024; $i <= date('Y') + 1; $i++)
+                            <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>
+                                {{ $i }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter-submit">
+                        <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4" stroke-linecap="round"/></svg>
+                        Terapkan
+                    </button>
+                    <a href="{{ route('invoice.index') }}" class="btn-filter-reset">Reset</a>
+                </div>
+            </form>
+        </div>
+
         <div class="invoice-table-container">
             <table class="invoice-table">
                 <thead>
@@ -428,6 +615,7 @@
                                     <span class="status-badge status-belum">BELUM LUNAS</span>
                                 @endif
                             </td>
+
                             <td class="aksi-cell" data-label="Aksi">
                                 <div class="action-group">
                                     <a href="{{ route('invoice.print', $inv->id) }}" target="_blank" class="btn-action btn-cetak">Cetak</a>

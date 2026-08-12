@@ -40,12 +40,37 @@ class InvoiceController extends Controller
         return $terbilang;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::orderBy('created_at', 'desc')->paginate(20);
+        // Mulai query
+        $query = Invoice::query();
+
+        // 1. Filter Pencarian (No Invoice atau Nama Pelanggan)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_invoice', 'like', "%{$search}%")
+                  ->orWhere('nama_pelanggan', 'like', "%{$search}%");
+            });
+        }
+
+        // 2. Filter Bulan
+        if ($request->filled('bulan')) {
+            $query->whereMonth('tanggal', $request->bulan);
+        }
+
+        // 3. Filter Tahun
+        if ($request->filled('tahun')) {
+            $query->whereYear('tanggal', $request->tahun);
+        }
+
+        // Eksekusi query dengan pagination & pertahankan parameter filter di URL (withQueryString)
+        $invoices = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+
         return view('invoice.index', compact('invoices'));
     }
 
+    // --- FUNGSI TAMPILKAN FORM BUAT INVOICE ---
     public function create()
     {
         $bulan = date('m');

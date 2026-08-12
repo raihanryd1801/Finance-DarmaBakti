@@ -2,7 +2,20 @@
 
 @section('content')
     <div class="card" style="padding: 20px;">
-        <h3 style="margin-bottom: 20px;">📝 Buat Invoice Baru</h3>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+    <div style="width:42px;height:42px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;border:1px solid #dbeafe;">
+        <svg viewBox="0 0 24 24"
+             width="22"
+             height="22"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+        </svg>
+    </div>
+
+    <h3 style="margin:0;">Buat Invoice Baru</h3>
+</div>
         
         <form action="{{ route('invoice.store') }}" method="POST">
             @csrf
@@ -18,7 +31,7 @@
                     <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" class="form-control" required style="width: 100%; padding: 8px;">
                 </div>
                 <div>
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Kepada Yth (Nama Pelanggan)</label>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Kepada Yth (Nama Pelanggan/Instansi)</label>
                     <input type="text" name="nama_pelanggan" class="form-control" required style="width: 100%; padding: 8px;">
                 </div>
                 <div>
