@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Finance - Uang Masuk</title>
+<title>DASHBOARD - DARMA APP</title>
+<link rel="icon" href="{{ asset('darma.png') }}" type="image/png">
 <script>
 // Set tema SEBELUM CSS/HTML dirender, biar tidak ada kedipan (flash) warna salah
 (function(){

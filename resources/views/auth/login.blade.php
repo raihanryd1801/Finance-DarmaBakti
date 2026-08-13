@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Finance</title>
+    <title>Login - Darma APP</title>
+    <link rel="icon" href="{{ asset('darma.png') }}" type="image/png">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -306,7 +307,7 @@
         <aside class="brand-panel">
             <div>
                 <div class="brand-mark">CV. DARMA BAKTI <span>APP</span></div>
-                <p class="brand-tagline">Satu dasbor untuk memantau uang masuk, status transfer, rekapitulasi per instansi & Monitoring Dokument</p>
+                <p class="brand-tagline">Satu dashboard untuk memantau uang masuk, status transfer, rekapitulasi per instansi & Monitoring Dokumen</p>
 
                 <div class="chart-preview" aria-hidden="true">
                     <div class="chart-label">Arus Kas &middot;</div>
@@ -341,7 +342,7 @@
                 </div>
             </div>
 
-            <div class="brand-foot">FIN-{{ date('Y') }} · AKSES INTERNAL</div>
+            <div class="brand-foot">© SKYKOM-{{ date('Y') }} · AKSES INTERNAL</div>
         </aside>
 
         <!-- PANEL KANAN: FORM LOGIN -->
