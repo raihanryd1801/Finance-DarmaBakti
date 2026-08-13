@@ -11,6 +11,7 @@ class DokumenApiController extends Controller
 
     public function index(Request $request)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses Menu ini!');
         $response = Http::get($this->baseUrl);
         $dokumen = $response->successful() ? $response->json('data') : [];
 
@@ -45,6 +46,7 @@ class DokumenApiController extends Controller
     // 1. PREVIEW PDF (Tampil otomatis di tab browser)
     public function preview($id)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses Menu ini!');
         $response = Http::get("{$this->baseUrl}/{$id}/download"); // Mengambil file dari API pusat
 
         if ($response->successful()) {
@@ -60,6 +62,7 @@ class DokumenApiController extends Controller
     // 2. DOWNLOAD FILE
     public function download($id)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses Menu ini!');
         $response = Http::get("{$this->baseUrl}/{$id}/download");
 
         if ($response->successful()) {

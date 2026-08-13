@@ -9,17 +9,20 @@ class RekeningController extends Controller
 {
     public function index()
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses menu ini');
         $rekenings = Rekening::orderBy('nama_bank', 'asc')->paginate(10);
         return view('rekening.index', compact('rekenings'));
     }
 
     public function create()
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses menu ini');
         return view('rekening.create');
     }
 
     public function store(Request $request)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses menu ini');
         $request->validate([
             'nama_bank' => 'required',
             'nomor_rekening' => 'required|unique:rekenings',
@@ -39,12 +42,14 @@ class RekeningController extends Controller
 
     public function edit($id)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses menu ini');
         $rekening = Rekening::findOrFail($id);
         return view('rekening.edit', compact('rekening'));
     }
 
     public function update(Request $request, $id)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses menu ini');
         $rekening = Rekening::findOrFail($id);
 
         $request->validate([
@@ -64,6 +69,7 @@ class RekeningController extends Controller
 
     public function destroy($id)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses menu ini');
         $rekening = Rekening::findOrFail($id);
         $rekening->delete();
 

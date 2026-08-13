@@ -346,7 +346,6 @@
                     <a href="{{ route('barang.edit', $item->id) }}" class="btn-action btn-edit">Edit</a>
                     <form action="{{ route('barang.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus barang ini?');">
                         @csrf
-                        @method('DELETE')
                         <button type="submit" class="btn-action btn-delete">Hapus</button>
                     </form>
                 </div>
