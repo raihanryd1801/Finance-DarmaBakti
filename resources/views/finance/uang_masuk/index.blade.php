@@ -72,6 +72,22 @@
             background: rgba(16, 185, 129, 0.18);
             color: #6ee7b7;
         }
+        /* Freeze kolom pertama + header saat scroll — biar user tetap tau baris ini punya instansi/tanggal apa */
+@media (max-width: 768px) {
+    .finance-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .finance-table tbody td:first-child,
+    .finance-table thead th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background: var(--bg-card);
+        box-shadow: 2px 0 4px rgba(0,0,0,.08);
+    }
+}
     </style>
 
     @php
