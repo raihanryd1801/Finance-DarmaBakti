@@ -276,12 +276,41 @@ label { display: block; margin-bottom: .5rem; font-weight: 500; font-size: .875r
   .filter-section .form-control { min-width: 150px; }
   .pagination-wrapper { flex-direction: column; align-items: flex-start; }
 }
+/* Ganti total media query 576px yang lama dengan ini */
 @media (max-width:576px){
-  body { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; position: relative; }
-  .sidebar-menu { display: flex; flex-wrap: wrap; padding: .5rem; }
-  .sidebar-menu a { padding: .5rem .75rem; }
-  .sidebar-menu a.active::before { display: none; }
+  body { flex-direction: row; } /* tetap row, sidebar jadi overlay */
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    width: 260px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: 4px 0 20px rgba(0,0,0,.25);
+  }
+  body.sidebar-mobile-open .sidebar {
+    transform: translateX(0);
+  }
+  /* jangan pakai aturan collapse desktop (width:0) di mobile */
+  body.sidebar-collapsed .sidebar { width: 260px; margin-left: 0; }
+  body.sidebar-collapsed .sidebar * { opacity: 1; pointer-events: auto; }
+
+  .sidebar-menu { display: block; padding: .5rem .75rem; } /* balik jadi list vertikal, bukan wrap horizontal */
+  .sidebar-menu a.active::before { display: block; }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 999;
+  }
+  body.sidebar-mobile-open .sidebar-overlay { display: block; }
+
+  .main-wrapper { width: 100%; }
+  .container { padding: 1rem; }
+  .main-header { padding: .75rem 1rem; flex-direction: row; }
 }
 </style>
 </head>
@@ -407,6 +436,7 @@ label { display: block; margin-bottom: .5rem; font-weight: 500; font-size: .875r
         @endauth
     </div>
 </aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="main-wrapper">
     <header class="main-header">
@@ -433,16 +463,25 @@ label { display: block; margin-bottom: .5rem; font-weight: 500; font-size: .875r
 (function(){
     var body = document.body;
     var toggleBtn = document.getElementById('sidebarToggle');
+    var overlay = document.getElementById('sidebarOverlay');
     var STORAGE_KEY = 'sidebar-collapsed';
+    var isMobile = () => window.innerWidth <= 576;
 
-    if (localStorage.getItem(STORAGE_KEY) === '1') {
+    if (!isMobile() && localStorage.getItem(STORAGE_KEY) === '1') {
         body.classList.add('sidebar-collapsed');
     }
 
-    toggleBtn.addEventListener('click', function(){
-        body.classList.toggle('sidebar-collapsed');
-        localStorage.setItem(STORAGE_KEY, body.classList.contains('sidebar-collapsed') ? '1' : '0');
-    });
+    function toggleSidebar(){
+        if (isMobile()) {
+            body.classList.toggle('sidebar-mobile-open');
+        } else {
+            body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem(STORAGE_KEY, body.classList.contains('sidebar-collapsed') ? '1' : '0');
+        }
+    }
+
+    toggleBtn.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', function(){ body.classList.remove('sidebar-mobile-open'); });
 })();
 
 (function(){

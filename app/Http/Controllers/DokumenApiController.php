@@ -12,6 +12,7 @@ class DokumenApiController extends Controller
     public function index(Request $request)
     {
         abort_if(auth()->user()->role !== 'admin', 403, 'FORBIDDEN 🛑 : Hanya Admin yang boleh Akses Menu ini!');
+        
         $response = Http::get($this->baseUrl);
         $dokumen = $response->successful() ? $response->json('data') : [];
 
@@ -35,6 +36,19 @@ class DokumenApiController extends Controller
 
                 $formatTgl = date('Y-m-d', strtotime($tgl));
                 return $formatTgl >= $request->start_date && $formatTgl <= $request->end_date;
+            });
+        }
+
+        // 3. BARU: Filter berdasarkan Pencarian Teks (Ketik)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $collection = $collection->filter(function ($item) use ($search) {
+                // Sesuaikan 'nama_dokumen' atau 'keterangan' dengan key JSON dari API Abang
+                $nama = $item['nama_dokumen'] ?? $item['judul'] ?? ''; 
+                $keterangan = $item['keterangan'] ?? $item['deskripsi'] ?? '';
+
+                // stripos digunakan untuk pencarian teks yang tidak mempedulikan huruf besar/kecil (case-insensitive)
+                return stripos($nama, $search) !== false || stripos($keterangan, $search) !== false;
             });
         }
 
@@ -75,5 +89,4 @@ class DokumenApiController extends Controller
 
         return back()->with('error', 'Gagal mendownload file dari server API.');
     }
-    
 }

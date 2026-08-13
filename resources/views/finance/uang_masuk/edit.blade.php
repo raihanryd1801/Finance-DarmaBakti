@@ -172,6 +172,25 @@ border:1px solid var(--fp-border);overflow:hidden}
                         </select>
                     </div>
                 </div>
+
+                <!-- TAMBAHAN: KHUSUS PEMERINTAH (NO PENGEMBALIAN & STATUS FAKTUR) -->
+                <div id="div_pemerintah_extra" style="display: {{ $data->kategori == 'pemerintah' ? 'block' : 'none' }}; margin-top: 1rem;">
+                    <div class="field-row">
+                        <div class="form-group">
+                            <label>No Pengembalian / Kode Dokumen Instansi</label>
+                            <input type="text" name="status_pengembalian" class="form-control" value="{{ $data->status_pengembalian }}" placeholder="Cth: 090326PU.BANTEN">
+                            <small class="hint-text">Nomor pengembalian SPJ/dokumen sesuai instansi.</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Sudah Buat Faktur?</label>
+                            <select name="status_faktur" class="form-control">
+                                <option value="">-- Pilih Status --</option>
+                                <option value="SUDAH" {{ $data->status_faktur == 'SUDAH' ? 'selected' : '' }}>SUDAH</option>
+                                <option value="BELUM" {{ $data->status_faktur == 'BELUM' ? 'selected' : '' }}>BELUM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- NOMINAL & PAJAK -->
@@ -182,7 +201,6 @@ border:1px solid var(--fp-border);overflow:hidden}
                 </div>
 
                 @php
-                    // Jika pemerintah, nominal dasarnya adalah total_diterima (netto transfer). Jika swasta, pakai jumlah_include_ppn
                     $nominalAwal = $data->kategori == 'pemerintah' ? $data->total_diterima : $data->jumlah_include_ppn;
                 @endphp
                 <div class="form-group">
@@ -210,7 +228,6 @@ border:1px solid var(--fp-border);overflow:hidden}
                 <div class="info-block">
                     <div class="field-row" style="margin-bottom:0;">
                         @php
-                            // Selisih antara Rekening Koran dan Total Diterima murni adalah Biaya Admin
                             $biayaAdminVal = $data->total_diterima - $data->total_rekening_koran;
                             if($biayaAdminVal < 0) $biayaAdminVal = abs($biayaAdminVal);
                         @endphp
@@ -255,13 +272,16 @@ border:1px solid var(--fp-border);overflow:hidden}
         let kat = document.querySelector('input[name="kategori"]:checked').value;
         let pph = document.getElementById('potong_pph');
         let divKeterangan = document.getElementById('div_keterangan');
+        let divPemerintahExtra = document.getElementById('div_pemerintah_extra');
         
         if(kat === 'swasta') {
             pph.checked = false; 
             divKeterangan.style.display = 'block';
+            if(divPemerintahExtra) divPemerintahExtra.style.display = 'none';
         } else {
             pph.checked = true; 
             divKeterangan.style.display = 'none';
+            if(divPemerintahExtra) divPemerintahExtra.style.display = 'block';
         }
     }
 

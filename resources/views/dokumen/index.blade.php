@@ -11,6 +11,7 @@
                 Data Dokumen dari Server Pusat (API)
             </h3>
         </div>
+        
 
         <!-- FORM FILTER -->
         <form action="{{ route('dokumen-api.index') }}" method="GET" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
@@ -26,6 +27,16 @@
                     @endforeach
                 </select>
             </div>
+            <div style="flex-grow: 1; min-width: 250px;">
+        <label style="font-size: 12px; font-weight: bold; color: #64748b;">Pencarian Dokumen</label>
+        <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Ketik nama dokumen atau keterangan..." style="border-radius: 6px; width: 100%;">
+    </div>
+
+    <!-- Tombol Filter -->
+    <button type="submit" class="btn btn-primary" style="padding: 7px 16px;">🔍 Cari Data</button>
+
+    <!-- Tombol Reset -->
+    <a href="{{ url('dashboard/dokumen-api') }}" class="btn btn-secondary" style="padding: 7px 16px; text-decoration: none;">Reset</a>
 
             <div style="flex: 1; min-width: 150px;">
                 <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #475569;">Dari Tanggal</label>

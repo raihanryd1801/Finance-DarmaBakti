@@ -118,6 +118,9 @@ class UangMasukController extends Controller
             'ppn'                  => $ppn,
             'pph_22'               => $pph_22,
             'total_diterima'       => $total_diterima,
+            // Di dalam array UangMasuk::create([...]) dan $uangMasuk->update([...]):
+            'status_pengembalian'  => $request->kategori == 'pemerintah' ? $request->status_pengembalian : null,
+            'status_faktur'        => $request->kategori == 'pemerintah' ? $request->status_faktur : null,
             'total_rekening_koran' => $total_rekening_koran,
             'nilai_nota'           => $nilai_nota > 0 ? $nilai_nota : null,
             'selisih'              => $selisih,
@@ -268,6 +271,9 @@ class UangMasukController extends Controller
             'ppn'                  => $ppn,
             'pph_22'               => $pph_22,
             'total_diterima'       => $total_diterima,
+            // Di dalam array UangMasuk::create([...]) dan $uangMasuk->update([...]):
+            'status_pengembalian'  => $request->kategori == 'pemerintah' ? $request->status_pengembalian : null,
+            'status_faktur'        => $request->kategori == 'pemerintah' ? $request->status_faktur : null,
             'total_rekening_koran' => $total_rekening_koran,
             'nilai_nota'           => $nilai_nota > 0 ? $nilai_nota : null,
             'selisih'              => $selisih,

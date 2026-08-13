@@ -185,13 +185,31 @@ border:1px solid var(--fp-border);overflow:hidden;transition:background-color .3
                         </select>
                     </div>
 
-                    <!-- BARU: STATUS TRANSFER -->
                     <div class="form-group">
                         <label>Status Transfer</label>
                         <select name="status_transfer" class="form-control" required>
                             <option value="BELUM">BELUM TF</option>
                             <option value="SUDAH">SUDAH TF</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- TAMBAHAN: KHUSUS PEMERINTAH (NO PENGEMBALIAN & STATUS FAKTUR) -->
+                <div id="div_pemerintah_extra" style="margin-top: 1rem;">
+                    <div class="field-row">
+                        <div class="form-group">
+                            <label>No Pengembalian / Kode Dokumen Instansi</label>
+                            <input type="text" name="status_pengembalian" class="form-control" placeholder="Cth: 090326PU.BANTEN">
+                            <small class="hint-text">Nomor pengembalian SPJ/dokumen sesuai instansi.</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Sudah Buat Faktur?</label>
+                            <select name="status_faktur" class="form-control">
+                                <option value="">-- Pilih Status --</option>
+                                <option value="SUDAH">SUDAH</option>
+                                <option value="BELUM">BELUM</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,13 +221,11 @@ border:1px solid var(--fp-border);overflow:hidden;transition:background-color .3
                     Nominal & Pajak
                 </div>
 
-                <!-- NOMINAL TRANSFER -->
                 <div class="form-group">
                     <label>Nominal Dasar Transfer</label>
                     <input type="text" name="jumlah_nominal_input" class="form-control nominal-input" placeholder="Contoh: 150000000" required>
                 </div>
 
-                <!-- CHECKBOX PAJAK -->
                 <div class="info-block tax" style="margin-bottom:1rem;">
                     <div class="info-block-label">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -222,10 +238,9 @@ border:1px solid var(--fp-border);overflow:hidden;transition:background-color .3
                     <small class="hint-text tax-hint">*Centang PPN berarti Nominal Dasar dianggap sebagai Harga Kotor (Include PPN).</small>
                 </div>
 
-                <!-- KOLOM TAMBAHAN UNTUK NILAI DOKUMEN / NOTA -->
                 <div class="form-group">
                     <label>Nilai Dokumen / Nota (Opsional)</label>
-                    <input type="text" name="nilai_nota" id="input_nilai_nota" class="form-control" placeholder="Contoh: 113.512.763" value="{{ isset($data) ? number_format((float)$data->nilai_nota, 0, ',', '.') : old('nilai_nota') }}">
+                    <input type="text" name="nilai_nota" id="input_nilai_nota" class="form-control" placeholder="Contoh: 113.512.763">
                     <small class="hint-text">*Opsional: Ketik angka, titik ribuan akan muncul otomatis.</small>
                 </div>
             </div>
@@ -237,7 +252,6 @@ border:1px solid var(--fp-border);overflow:hidden;transition:background-color .3
                     Biaya Admin Bank
                 </div>
 
-                <!-- OPSI POTONGAN ADMIN BANK -->
                 <div class="info-block">
                     <div class="field-row" style="margin-bottom:0;">
                         <div class="form-group" style="margin-bottom:0;">
@@ -269,69 +283,68 @@ border:1px solid var(--fp-border);overflow:hidden;transition:background-color .3
     </div>
 </div>
 
-    <script>
-        function toggleAdminFee() {
-            var jenis = document.getElementById('jenis_transfer_bank').value;
-            var divAdmin = document.getElementById('div_biaya_admin');
-            var inputAdmin = document.getElementById('biaya_admin');
-            
-            if (jenis === 'beda') {
-                divAdmin.style.display = 'block';
-                inputAdmin.value = ''; 
-                inputAdmin.required = true;
-            } else {
-                divAdmin.style.display = 'none';
-                inputAdmin.value = 0;
-                inputAdmin.required = false;
-            }
+<script>
+    function toggleAdminFee() {
+        var jenis = document.getElementById('jenis_transfer_bank').value;
+        var divAdmin = document.getElementById('div_biaya_admin');
+        var inputAdmin = document.getElementById('biaya_admin');
+        
+        if (jenis === 'beda') {
+            divAdmin.style.display = 'block';
+            inputAdmin.value = ''; 
+            inputAdmin.required = true;
+        } else {
+            divAdmin.style.display = 'none';
+            inputAdmin.value = 0;
+            inputAdmin.required = false;
+        }
+    }
+
+    function toggleForm() {
+        let kat = document.querySelector('input[name="kategori"]:checked').value;
+        let pph = document.getElementById('potong_pph');
+        let divKeterangan = document.getElementById('div_keterangan');
+        let divPemerintahExtra = document.getElementById('div_pemerintah_extra');
+        
+        if(kat === 'swasta') {
+            pph.checked = false; 
+            divKeterangan.style.display = 'block'; 
+            if(divPemerintahExtra) divPemerintahExtra.style.display = 'none'; // Sembunyikan field Pemerintah
+        } else {
+            pph.checked = true; 
+            divKeterangan.style.display = 'none'; 
+            if(divPemerintahExtra) divPemerintahExtra.style.display = 'block'; // Munculkan field Pemerintah
+        }
+    }
+
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split   = number_string.split(','),
+            sisa    = split[0].length % 3,
+            rupiah  = split[0].substr(0, sisa),
+            ribuan  = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
         }
 
-        function toggleForm() {
-            let kat = document.querySelector('input[name="kategori"]:checked').value;
-            let pph = document.getElementById('potong_pph');
-            let divKeterangan = document.getElementById('div_keterangan');
-            
-            if(kat === 'swasta') {
-                pph.checked = false; // Otomatis lepas centang PPh 22
-                divKeterangan.style.display = 'block'; // Munculkan kolom Keterangan Swasta
-            } else {
-                pph.checked = true; // Centang balik kalau Pemerintah
-                divKeterangan.style.display = 'none'; // Sembunyikan kolom Keterangan Swasta
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var inputNominal = document.querySelector('input[name="jumlah_nominal_input"]');
+        
+        if (inputNominal) {
+            if(inputNominal.value) {
+                inputNominal.value = formatRupiah(inputNominal.value, '');
             }
+
+            inputNominal.addEventListener('keyup', function(e) {
+                this.value = formatRupiah(this.value, '');
+            });
         }
-
-        // Fungsi untuk memformat angka menjadi format Rupiah (misal: 1000000 jadi 1.000.000)
-        function formatRupiah(angka, prefix) {
-            var number_string = angka.replace(/[^,\d]/g, '').toString(),
-                split   = number_string.split(','),
-                sisa    = split[0].length % 3,
-                rupiah  = split[0].substr(0, sisa),
-                ribuan  = split[0].substr(sisa).match(/\d{3}/gi);
-
-            if (ribuan) {
-                separator = sisa ? '.' : '';
-                rupiah += separator + ribuan.join('.');
-            }
-
-            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-            return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
-        }
-
-        // Terapkan ke input Nominal Transfer saat user mengetik
-        document.addEventListener("DOMContentLoaded", function() {
-            var inputNominal = document.querySelector('input[name="jumlah_nominal_input"]');
-            
-            if (inputNominal) {
-                // Format saat halaman dimuat (berguna untuk form Edit)
-                if(inputNominal.value) {
-                    inputNominal.value = formatRupiah(inputNominal.value, '');
-                }
-
-                // Format secara real-time saat user mengetik
-                inputNominal.addEventListener('keyup', function(e) {
-                    this.value = formatRupiah(this.value, '');
-                });
-            }
-        });
-    </script>
+    });
+</script>
 @endsection
